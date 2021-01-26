@@ -1,0 +1,26 @@
+<launch>
+  <param name="/use_sim_time" value="true"/>
+
+  <!-- Run the map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find multi_turtlebot_slam)/maps/map.yaml" >
+    <param name="frame_id" value="/map" />
+  </node>
+
+  <group ns="robot1">
+    <param name="tf_prefix" value="robot1_tf" />
+    <param name="amcl/initial_pose_x" value="1" />
+    <param name="amcl/initial_pose_y" value="1" />
+    <include file="$(find multi_turtlebot_slam)/launch/kailey_move_base.launch" />
+  </group>
+
+  <group ns="robot2">
+    <param name="tf_prefix" value="robot2_tf" />
+    <param name="amcl/initial_pose_x" value="-1" />
+    <param name="amcl/initial_pose_y" value="1" />
+    <include file="$(find multi_turtlebot_slam)/launch/kailey_move_base.launch" />
+  </group>
+
+  <node pkg="rviz" type="rviz" name="rviz" output="screen" />
+  <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find your_pkg)/config/multi.vcg" output="screen" /> -->
+
+</launch>

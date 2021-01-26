@@ -1,0 +1,51 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="slam_methods" default="gmapping" doc="slam type [gmapping, cartographer, hector, karto, frontier_exploration]"/>
+  <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="first_tb3"  default="tb3_0"/>
+  <arg name="second_tb3" default="tb3_1"/>
+
+<!-- Open two tb in gazebo -->
+  <!-- <include file="$(find multi_turtlebot_slam)/launch/two_tb_gaz.launch"/> -->
+  <include file="$(find multi_turtlebot_slam)/launch/sim.launch"/>
+
+<!-- Open gmapping for each ns -->
+  <!-- <include file="$(find multi_turtlebot_slam)/launch/tb3_0_gmapping.launch"/>
+  <include file="$(find multi_turtlebot_slam)/launch/tb3_1_gmapping.launch"/> -->
+
+  <include file="$(find turtlebot3_gazebo)/launch/multi_turtlebot3_slam.launch">
+    <arg name="ns"  value="$(arg first_tb3)"/>
+  </include>
+
+  <include file="$(find turtlebot3_gazebo)/launch/multi_turtlebot3_slam.launch">
+    <arg name="ns"  value="$(arg second_tb3)"/>
+  </include>
+
+<!-- Merge the two maps -->
+  <include file="$(find turtlebot3_gazebo)/launch/multi_map_merge.launch"/>
+
+<!-- Open rviz for two robots -->
+  <node pkg="rviz" type="rviz" name="rviz"
+    args="-d $(find multi_tb_slam)/config/two_tb.rviz"/>
+
+<!-- Open amcl and move_base for each ns -->
+  <!-- <group ns = "$(arg first_tb3)">
+    <include file="$(find multi_tb_slam)/launch/kailey_move_base.launch"/>
+  </group>
+
+  <group ns = "$(arg second_tb3)">
+    <include file="$(find multi_tb_slam)/launch/kailey_move_base.launch"/>
+  </group> -->
+
+  <!-- <group ns = "$(arg second_tb3)"> -->
+    <!-- <node pkg="multi_tb_slam" type="key_teleop.py" name ="key_teleop"/> -->
+    <!-- <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name ="teleop_twist_keyboard"/>
+  </group> -->
+
+  <!-- <group ns = "$(arg first_tb3)">
+    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
+  </group> -->
+
+</launch>
