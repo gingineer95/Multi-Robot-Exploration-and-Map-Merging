@@ -28,17 +28,17 @@
 
 <!-- Open rviz for two robots -->
   <node pkg="rviz" type="rviz" name="rviz"
-    args="-d $(find multi_tb_slam)/config/two_tb.rviz"/>
+    args="-d $(find multi_turtlebot_slam)/config/two_tb.rviz"/>
 
 <!-- Open amcl and move_base for each ns -->
 <!-- Seems like we're not getting the map right now -->
   <group ns = "$(arg first_tb3)">
     <arg name="ns_tb3"  value="$(arg first_tb3)"/>
-    <include file="$(find multi_tb_slam)/launch/kailey_move_base.launch"/>
+    <include file="$(find multi_turtlebot_slam)/launch/kailey_move_base.launch"/>
   </group>
 
   <!-- <group ns = "$(arg second_tb3)">
-    <include file="$(find multi_tb_slam)/launch/kailey_move_base.launch"/>
+    <include file="$(find multi_turtlebot_slam)/launch/kailey_move_base.launch"/>
   </group> -->
 
   <!-- Use two seperate controls for navigation -->
