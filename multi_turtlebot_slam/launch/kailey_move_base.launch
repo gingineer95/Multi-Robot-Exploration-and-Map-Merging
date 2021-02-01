@@ -2,6 +2,7 @@
   <!--- Run AMCL -->
   <!-- <include file="$(find amcl)/examples/amcl_diff.launch" /> -->
   <include file="$(find turtlebot3_navigation)/launch/amcl.launch" />
+  <arg name="ns_tb3"  default="tb3_0"/>
 
   <!-- Define your move_base node -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
@@ -11,6 +12,6 @@
     <rosparam file="$(find turtlebot3_navigation)/param/global_costmap_params.yaml" command="load" />
     <rosparam file="$(find turtlebot3_navigation)/param/base_local_planner_params.yaml" command="load" />
 
-    <remap from="map" to="/map" />
+    <!-- <remap from="map" to="$(arg ns_tb3)/map" /> -->
   </node>
 </launch>

@@ -2,13 +2,6 @@
     <arg name="robot_name"/> <!--name will change with multiple robots-->
     <arg name="init_pose"/> <!--init pos will change for each robot-->
 
-    <!-- <node name="spawn_minibot_model" pkg="gazebo" type="spawn_model"
-     args="$(arg init_pose) -urdf -param /robot_description -model $(arg robot_name)"
-     respawn="false" output="screen" />
-
-    <node pkg="robot_state_publisher" type="state_publisher" 
-          name="robot_state_publisher" output="screen"/> -->
-
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find multi_turtlebot_slam)/urdf/tb3_0.urdf.xacro" />
 
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">

@@ -31,21 +31,29 @@
     args="-d $(find multi_tb_slam)/config/two_tb.rviz"/>
 
 <!-- Open amcl and move_base for each ns -->
-  <!-- <group ns = "$(arg first_tb3)">
+<!-- Seems like we're not getting the map right now -->
+  <group ns = "$(arg first_tb3)">
+    <arg name="ns_tb3"  value="$(arg first_tb3)"/>
     <include file="$(find multi_tb_slam)/launch/kailey_move_base.launch"/>
   </group>
 
-  <group ns = "$(arg second_tb3)">
+  <!-- <group ns = "$(arg second_tb3)">
     <include file="$(find multi_tb_slam)/launch/kailey_move_base.launch"/>
   </group> -->
 
-  <!-- <group ns = "$(arg second_tb3)"> -->
-    <!-- <node pkg="multi_tb_slam" type="key_teleop.py" name ="key_teleop"/> -->
-    <!-- <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name ="teleop_twist_keyboard"/>
-  </group> -->
-
-  <!-- <group ns = "$(arg first_tb3)">
+  <!-- Use two seperate controls for navigation -->
+  <group ns = "$(arg first_tb3)">
     <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
-  </group> -->
+  </group>
+
+  <group ns = "$(arg second_tb3)">
+    <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name ="teleop_twist_keyboard"/>
+  </group>
+
+  <!-- Add the following transform to resolve map and namespace mismatch -->
+  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster"  args="0 0 0 0 0 0 /map /$(arg first_tb3)/$(arg first_tb3)/map 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster" args="0 0 0 0 0 0 /map /$(arg second_tb3)/$(arg second_tb3)/map 100"/>
+
+  <include file="$(find slam_toolbox)/online_sync.launch"/>
 
 </launch>
