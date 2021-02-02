@@ -65,6 +65,7 @@
   <exec_depend>turtlebot3_teleop</exec_depend>
   <exec_depend>turtlebot3_bringup</exec_depend>
   <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>gmapping</exec_depend>
 
 
 

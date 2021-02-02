@@ -3,22 +3,26 @@
        Access with slash at the beginning -->
   <!-- <param name="robot_description" -->
     <!-- command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot.urdf.xacro" /> -->
+    <arg name="first_tb3"  default="tb3_0"/>
+    <arg name="second_tb3" default="tb3_1"/>
 
   <!-- BEGIN ROBOT 1-->
-  <group ns="tb3_0">
-    <param name="tf_prefix" value="tb3_0" />
-    <include file="$(find multi_turtlebot_slam)/launch/one_tb3_0.launch" >
-      <arg name="init_pose" value="-x 1 -y 1 -z 0" />
-      <arg name="robot_name"  value="Robot1" />
+  <group ns="$(arg first_tb3)">
+    <!-- <param name="tf_prefix" value="$(arg first_tb3)" /> -->
+    <include file="$(find multi_turtlebot_slam)/launch/turtlebot3.launch" >
+    <!-- <include file="$(find multi_turtlebot_slam)/launch/oof.launch" > -->
+      <arg name="init_pose" value="-x -7.0 -y -1.0 -z 0.0" />
+      <arg name="robot_name"  value="tb3_0" />
     </include>
   </group>
 
   <!-- BEGIN ROBOT 2-->
-  <group ns="tb3_1">
-    <param name="tf_prefix" value="tb3_1" />
-    <include file="$(find multi_turtlebot_slam)/launch/one_tb3_1.launch" >
-      <arg name="init_pose" value="-x -1 -y 1 -z 0" />
-      <arg name="robot_name"  value="Robot2" />
+  <group ns="$(arg second_tb3)">
+    <!-- <param name="tf_prefix" value="$(arg second_tb3)" /> -->
+    <include file="$(find multi_turtlebot_slam)/launch/turtlebot3.launch" >
+    <!-- <include file="$(find multi_turtlebot_slam)/launch/oof.launch" > -->
+      <arg name="init_pose" value="-x 7.0 -y -1.0 -z 0.0" />
+      <arg name="robot_name"  value="$(arg second_tb3)" />
     </include>
   </group>
 </launch>

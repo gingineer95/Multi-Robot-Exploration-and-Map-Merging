@@ -3,14 +3,6 @@
   <xacro:include filename="$(find turtlebot3_description)/urdf/common_properties.xacro"/>
   <xacro:include filename="$(find multi_turtlebot_slam)/urdf/tb3_1.gazebo.xacro"/>
 
-  <!-- <link name="bf"/>
-
-  <joint name="base_j" type="fixed">
-    <parent link="bf"/>
-    <child link="tb3_1/base_footprint"/>
-    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
-  </joint> -->
-
   <link name="tb3_1/base_footprint"/>
 
   <joint name="tb3_1/base_joint" type="fixed">

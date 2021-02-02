@@ -1,6 +1,0 @@
-<launch>
-
-    <include file = "$(find multi_turtlebot_slam)/launch/sim.launch"/>
-    <include file = "$(find multi_turtlebot_slam)/launch/multi_nav.launch"/>
-
-</launch>
