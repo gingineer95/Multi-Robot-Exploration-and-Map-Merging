@@ -1,0 +1,15 @@
+<launch>
+
+  <arg name="n_s" default="tb3_0"/>
+
+  <node pkg="slam_toolbox" type="localization_slam_toolbox_node" name="slam_toolbox_$(arg n_s)" output="screen">
+    <rosparam command="load" file="$(find slam_toolbox)/config/mapper_params_localization.yaml" />
+    <param name="base_frame" value="$(arg n_s)/base_footprint"/>
+    <param name="odom_frame" value="$(arg n_s)/odom"/>
+    <param name="map_frame"  value="$(arg n_s)/map"/>
+    <remap from="/map" to="$(arg n_s)/map"/>
+    <remap from="/scan" to="$(arg n_s)/scan"/>
+    <!-- <rosparam command="load" file="$(find slam_toolbox)/config/mapper_params_localization.yaml" /> -->
+  </node>
+
+</launch>

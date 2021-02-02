@@ -66,8 +66,8 @@
   <exec_depend>turtlebot3_bringup</exec_depend>
   <exec_depend>slam_toolbox</exec_depend>
   <exec_depend>gmapping</exec_depend>
-
-
+  <exec_depend>tf</exec_depend>
+  <exec_depend>teleop_twist_keyboard</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
