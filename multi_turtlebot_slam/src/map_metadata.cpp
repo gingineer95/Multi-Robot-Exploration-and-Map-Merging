@@ -15,29 +15,20 @@
 
 // define global message 
 nav_msgs::OccupancyGrid map0_msg;
-// nav_msgs::OccupancyGrid map0_msg = *msg.get();
+nav_msgs::OccupancyGrid ugh;
 
-// / \brief Grabs the position of the robot from the pose subscriber and stores it
-// / \param msg - pose message
-// / \param turt_pose - stored pose message
-// / \returns nothing
-// void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr & msg)
-// {
-//   map0_msg.header = msg->header;
-//   map0_msg.info = msg->info;
-//   map0_msg.data = msg->data;
+/// / \brief Grabs the position of the robot from the pose subscriber and stores it
+/// / \param msg - pose message
+/// \returns nothing
+void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr & msg)
+{
+  map0_msg.header = msg->header;
+  map0_msg.info = msg->info;
+  map0_msg.data = msg->data;
+  ugh = map0_msg;
 
-//   // std::cout << map0_msg << std::endl;
-
-//   // map_data = map0_msg.data;
-
-//   // ROS_INFO("data size is... [%d]", *map_data);
-//   // std::cout << map_data << std::endl;
-
-// //   map0_msg.info.width = 384;
-// //   map0_msg.info.height = 384;
-// //   map_meta0_pub.publish(map0_msg);
-// }
+  // std::cout << "The width is " << map0_msg.info.width << std::endl;
+}
 
 
 int main(int argc, char * argv[])
@@ -47,8 +38,8 @@ int main(int argc, char * argv[])
 
   // Create the initpose publisher and subscriber
   // const auto map_meta0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("map", 100, mapCallback);
-  const auto map_meta0_pub = nh.advertise<nav_msgs::OccupancyGrid>("test_map", 100);
-  // const auto map_meta0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("tb3_0/map", 100, mapCallback);
+  const auto new_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("new_map", 100);
+  const auto map_meta0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("tb3_0/map", 100, mapCallback);
   // const auto map_meta0_pub = nh.advertise<nav_msgs::OccupancyGrid>("tb3_0/map", 100);
   // const auto map_meta1_pub = nh.advertise<nav_msgs::OccupancyGrid>("tb3_1/map", 100);
 
@@ -56,38 +47,62 @@ int main(int argc, char * argv[])
 
   while (ros::ok())
   {
-      // map0_msg.header.frame_id = "tb3_0/map";
-      // map0_msg.info.width = 384;
-      // map0_msg.info.height = 384;
-      // map0_msg.data.resize(map0_msg.info.width * map0_msg.info.height);
-      // std::fill(map0_msg.data, map0_msg.data + (map0_msg.info.height*map0_msg.info.width), value);
-      // map0_msg.data = new_map;
-      // map0_msg.info.origin.position.x = -7.0;
-      // map0_msg.info.origin.position.y = -1.0;
-      // map0_msg.info.origin.position.z = 0.0;
-      // map0_msg.info.origin.orientation.w = 0.0;
-
       nav_msgs::OccupancyGrid new_map;
       new_map.header.frame_id = "new_map";
       new_map.info.resolution = 0.05;
-      new_map.info.origin.position.x = -10.0;
+      new_map.info.origin.position.x =  -10.0;
       new_map.info.origin.position.y = -10.0;
       new_map.info.origin.position.z = 0.0;
       new_map.info.origin.orientation.w = 0.0;
 
-      const size_t width_ = 384;
+      // const size_t width_ = 384;
       const size_t height_ = 384;
-      new_map.info.width = width_;
+      const size_t bottom_width_ = 50; // Space between the bottom of the big map and the local slam map
+      new_map.info.width = bottom_width_ + ugh.info.width;
       new_map.info.height = height_;
 
-      // new_map.data.resize(map0_msg.info.width * map0_msg.info.height);
-
-      for (int i=0;  i < new_map.info.height * new_map.info.width; i++)
+      // Map starts ing in from origin in bottom right
+      // From the origin, the row components corresponds with width (x-dir which is actually up)
+      // Create empty space on rhs of map
+      for (int i=0;  i < new_map.info.width * 122; i++)
       {
         new_map.data.push_back(-1);
       }
 
-      map_meta0_pub.publish(new_map);
+      // // std::cout << "Current map size should be " << bottom_width_ * height_ << " and is actually " << new_map.data.size() << std::endl;
+
+      int curr_counter = 0;
+      int c1 = 0;
+      int c2 = 0;
+      auto curr_map_height = ugh.info.height - 1;
+
+      // std::cout << "start all the logics " << std::endl;
+
+      for (int item_counter=0; item_counter < ugh.info.height; item_counter++)
+      {
+        // std::cout << "Top of the inital for loop" << std::endl;
+        for (int q=0; q < bottom_width_; q++)
+        {
+          new_map.data.push_back(-1);
+          c1++;
+          // std::cout << "c1 should get to 277ish " << c1 << std::endl;
+        }
+
+        for (int a = 0; a < ugh.info.width; a++)
+        {
+          new_map.data.push_back(ugh.data[curr_counter]);
+          curr_counter++;
+          // std::cout << "Current counter is " << curr_counter << std::endl;
+        }
+      } 
+
+      for (int z=0;  z < ((height_ - ugh.info.height - 122) * new_map.info.width); z++)
+      {
+        new_map.data.push_back(-1);
+      }
+
+
+      new_map_pub.publish(new_map);
 
       ros::spinOnce();
       loop_rate.sleep();
