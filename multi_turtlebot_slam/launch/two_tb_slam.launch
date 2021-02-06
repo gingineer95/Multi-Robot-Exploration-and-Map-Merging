@@ -8,7 +8,7 @@
   <arg name="second_tb3" default="tb3_1"/>
 
   <!-- Add the initalpose node -->
-  <node pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_node" name="multi_turtlebot_slam_node" output="screen"/>
+  <!-- <node pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_node" name="multi_turtlebot_slam_node" output="screen"/> -->
 
 <!-- Open two tb in gazebo -->
   <include file="$(find multi_turtlebot_slam)/launch/sim.launch"/>
@@ -70,7 +70,7 @@
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_scan"  args="0 0 0 0 0 0 /$(arg first_tb3)/base_scan /$(arg first_tb3)/$(arg first_tb3)/base_scan 100"/>
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_caster"  args="0 0 0 0 0 0 /$(arg first_tb3)/caster_back_link /$(arg first_tb3)/$(arg first_tb3)/caster_back_link 100"/>
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_imu"  args="0 0 0 0 0 0 /$(arg first_tb3)/imu_link /$(arg first_tb3)/$(arg first_tb3)/imu_link 100"/>
-  <!-- <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_map"  args="0 0 0 0 0 0 /$(arg first_tb3)/map /$(arg first_tb3)/$(arg first_tb3)/map 100"/> -->
+  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_map"  args="0 0 0 0 0 0 /$(arg first_tb3)/map /$(arg first_tb3)/$(arg first_tb3)/map 100"/>
 
 
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_base_f"  args="0 0 0 0 0 0 /$(arg second_tb3)/base_footprint /$(arg second_tb3)/$(arg second_tb3)/base_footprint 100"/>
@@ -80,7 +80,7 @@
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_scan"  args="0 0 0 0 0 0 /$(arg second_tb3)/base_scan /$(arg second_tb3)/$(arg second_tb3)/base_scan 100"/>
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_caster"  args="0 0 0 0 0 0 /$(arg second_tb3)/caster_back_link /$(arg second_tb3)/$(arg second_tb3)/caster_back_link 100"/>
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_imu"  args="0 0 0 0 0 0 /$(arg second_tb3)/imu_link /$(arg second_tb3)/$(arg second_tb3)/imu_link 100"/>
-  <!-- <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_map"  args="0 0 0 0 0 0 /$(arg second_tb3)/map /$(arg second_tb3)/$(arg second_tb3)/map 100"/> -->
+  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_map"  args="0 0 0 0 0 0 /$(arg second_tb3)/map /$(arg second_tb3)/$(arg second_tb3)/map 100"/>
 
 
   <!-- <include file="$(find slam_toolbox)/online_sync.launch"/> -->

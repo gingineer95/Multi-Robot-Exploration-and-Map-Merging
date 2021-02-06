@@ -2,7 +2,8 @@
 /// \brief This node published on the initpose topic in order to properly locate the different maps to merge
 ///
 /// PUBLISHES:
-///     /initpose (geometry_msgs/PoseWithCovariance): Publishes a pose to only one robot. 
+///     /initpose_tb3_0 (geometry_msgs/PoseWithCovariance): Publishes a pose tb3_0 robot. 
+///     /initpose_tb3_1 (geometry_msgs/PoseWithCovariance): Publishes a pose tb3_1 robot.
 
 #include "ros/ros.h"
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
