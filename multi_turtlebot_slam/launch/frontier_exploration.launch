@@ -1,0 +1,6 @@
+<launch>
+
+  <!-- Add the map node -->
+  <node pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_front_expl" name="multi_turtlebot_front_expl" output="screen"/>
+
+</launch>

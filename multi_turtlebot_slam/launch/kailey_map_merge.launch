@@ -20,7 +20,7 @@
   </group>
 
   <group ns="$(arg second_tb3)/map_merge">
-    <param name="init_pose_x"   value="7.0"/>
+    <param name="init_pose_x"   value=" 7.0"/>
     <param name="init_pose_y"   value="-1.0"/>
     <param name="init_pose_z"   value="$(arg second_tb3_z_pos)"/>
     <param name="init_pose_yaw" value="$(arg second_tb3_yaw)"  />
@@ -36,11 +36,14 @@
     <param name="discovery_rate" value="0.05"/>
     <param name="estimation_rate" value="0.1"/>
     <param name="estimation_confidence" value="1.0"/>
+    <remap from = "$(arg first_tb3)/map" to = "new_tb3_0_map"/>
+    <remap from = "$(arg second_tb3)/map" to = "new_tb3_1_map"/>
   </node>
 
   <node pkg="tf" type="static_transform_publisher" name="world_to_$(arg first_tb3)_tf_broadcaster"  args="0 0 0 0 0 0 /map /$(arg first_tb3)/map 100"/>
   <node pkg="tf" type="static_transform_publisher" name="world_to_$(arg second_tb3)_tf_broadcaster" args="0 0 0 0 0 0 /map /$(arg second_tb3)/map 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="world_to_new_map" args="0 0 0 0 0 0 /map /new_map 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="world_to_new_$(arg first_tb3)_map" args="0 0 0 0 0 0 /map /new_tb3_0_map 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="world_to__new_$(arg second_tb3)_map" args="0 0 0 0 0 0 /map /new_tb3_1_map 100"/>
   <!-- <node pkg="tf" type="static_transform_publisher" name="map1_to_$(arg first_tb3)_tf_broadcaster"  args="0 0 0 0 0 0 /$(arg first_tb3)/map /$(arg first_tb3)/$(arg first_tb3)/map 100"/>
   <node pkg="tf" type="static_transform_publisher" name="wmap2_to_$(arg second_tb3)_tf_broadcaster" args="0 0 0 0 0 0 /$(arg second_tb3)/map /$(arg second_tb3)/$(arg second_tb3)/map 100"/> -->
 </launch>
