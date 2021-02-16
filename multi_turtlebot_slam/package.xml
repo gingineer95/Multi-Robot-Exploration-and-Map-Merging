@@ -70,6 +70,10 @@
   <exec_depend>teleop_twist_keyboard</exec_depend>
   <exec_depend>multirobot_map_merge</exec_depend>
   <depend>roscpp</depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_export_depend>tf2_ros</build_export_depend>
+  <build_depend>tf2</build_depend>
+  <build_export_depend>tf2</build_export_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

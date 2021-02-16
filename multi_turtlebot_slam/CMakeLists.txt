@@ -7,7 +7,11 @@ project(multi_turtlebot_slam)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS 
+roscpp
+tf2
+tf2_ros
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -101,7 +105,10 @@ find_package(catkin REQUIRED COMPONENTS roscpp)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES multi_turtlebot_slam
-  CATKIN_DEPENDS roscpp
+  CATKIN_DEPENDS 
+  roscpp
+  tf2 
+  tf2_ros
 #  DEPENDS system_lib
 )
 
@@ -132,6 +139,11 @@ include_directories(
 add_executable(${PROJECT_NAME}_node src/init_pose.cpp)
 add_executable(${PROJECT_NAME}_map_node src/map_metadata.cpp)
 add_executable(${PROJECT_NAME}_front_expl src/frontier_nav.cpp)
+
+# add_executable(turtle_tf2_listener src/turtle_tf2_listener.cpp)
+target_link_libraries(${PROJECT_NAME}_front_expl
+ ${catkin_LIBRARIES}
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

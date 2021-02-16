@@ -46,11 +46,11 @@
   </group> -->
 
   <!-- Use two seperate controls for navigation -->
-  <!-- <group ns = "$(arg first_tb3)">
+  <group ns = "$(arg first_tb3)">
     <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
   </group>
 
-  <group ns = "$(arg second_tb3)">
+  <!-- <group ns = "$(arg second_tb3)">
     <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name ="teleop_twist_keyboard"/>
   </group> -->
 
