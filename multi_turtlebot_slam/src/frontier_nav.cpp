@@ -45,6 +45,8 @@ int main(int argc, char * argv[])
   std::string map_frame = "/tb3_0/map";
   std::string body_frame = "tb3_0/base_footprint";
 
+  typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>  MoveBaseClient;
+
   // Create the initpose publisher and subscriber
   const auto tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edge/map", 100);
   const auto region_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("region/map", 100);
@@ -244,6 +246,45 @@ int main(int argc, char * argv[])
         }
 
         std::cout << "Moving to point " << centroid_Xpts[move_to_pt] << " , " << centroid_Ypts[move_to_pt] << std::endl;
+
+        if ((centroid_Xpts[move_to_pt] == 0) && (centroid_Ypts[move_to_pt] == 0))
+        {
+
+        }
+
+        else
+        {
+            // Move to goal
+            MoveBaseClient ac("tb3_0/move_base", true);
+
+            // Wait 60 seconds for the action server to become available
+            // ROS_INFO("Waiting for the move_base action server");
+            // ac.waitForServer(ros::Duration(60));
+            // ROS_INFO("Connected to move base server");
+
+            // Send a goal to move_base
+            //The attribute setting of the target
+
+            // move_base_msgs::MoveBaseGoal goal;
+            // goal.target_pose.header.frame_id = "tb3_0/map";
+            // goal.target_pose.header.stamp = ros::Time::now();
+            // goal.target_pose.pose.position.x = centroid_Xpts[move_to_pt];
+            // goal.target_pose.pose.position.y =  centroid_Ypts[move_to_pt];
+            // goal.target_pose.pose.orientation.w = 1;
+
+            // ROS_INFO("Sending goal");
+            // ac.sendGoal(goal);
+            // // Wait for the action to return
+            // ac.waitForResult();
+            // if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+            // {
+            //     ROS_INFO("You have reached the goal!");
+            // }
+            // else
+            // {
+            //     ROS_INFO("The base failed for some reason");
+            // }
+        }
         
         ros::spinOnce();
         loop_rate.sleep();

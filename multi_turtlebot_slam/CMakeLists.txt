@@ -8,6 +8,8 @@ project(multi_turtlebot_slam)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS 
+actionlib
+move_base_msgs
 roscpp
 tf2
 tf2_ros
@@ -106,6 +108,8 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES multi_turtlebot_slam
   CATKIN_DEPENDS 
+  actionlib
+  move_base_msgs
   roscpp
   tf2 
   tf2_ros
