@@ -38,7 +38,7 @@ class FrontExpl
             map_0_msg.info = msg->info;
             map_0_msg.data = msg->data;
 
-            std::cout << "map origin is " << map_0_msg.info.origin.position.x << " , " << map_0_msg.info.origin.position.y << std::endl;
+            // std::cout << "map origin is " << map_0_msg.info.origin.position.x << " , " << map_0_msg.info.origin.position.y << std::endl;
         }
 
         void main_loop()
@@ -54,21 +54,11 @@ class FrontExpl
             }
             ROS_INFO("Connected to move base server");
 
-            // int goal_c = 0;
-
-            //   boost::shared_ptr<nav_msgs::OccupancyGrid const> got_msg;
-            //   got_msg = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>("tb3_0/map", ros::Duration(10));
-            //   if(got_msg != NULL)
-            //   {
-            //     ROS_INFO("No map messages recieved yet");
-            //   }
-
             tf2_ros::TransformListener tfListener(tfBuffer);
             ros::Rate loop_rate(10);
             while (ros::ok())
             {
                 ros::spinOnce();
-                // void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr &msg);
 
                 FE_tb3_0_map.header.frame_id = "FE_map";
                 FE_tb3_0_map.info.resolution = map_0_msg.info.resolution;
@@ -188,7 +178,7 @@ class FrontExpl
                             // std::cout << "centroid location is " << temp_group[centroid] << std::endl;
                             centroids[region_c] = temp_group[centroid];
                             region_c++;
-                            // std::cout << "Number of regions is now " << region_c << std::endl;
+                            std::cout << "Number of regions is now " << region_c << std::endl;
                         }
 
                         // Reset group array and counter
@@ -205,7 +195,7 @@ class FrontExpl
 
                 // Find current location and move to the nearest centroid
                 //Get robot pose
-                geometry_msgs::TransformStamped transformS;
+                // geometry_msgs::TransformStamped transformS;
                 transformS = tfBuffer.lookupTransform(body_frame, map_frame, ros::Time(0), ros::Duration(3.0));
 
                 transformS.header.stamp = ros::Time();
@@ -220,42 +210,35 @@ class FrontExpl
                 robot_pose_.orientation.z = transformS.transform.rotation.z;
                 robot_pose_.orientation.w = transformS.transform.rotation.w;
 
-                std::cout << "Robot pose is " << robot_pose_.position.x << " , " << robot_pose_.position.y << std::endl;
+                // std::cout << "Robot pose is " << robot_pose_.position.x << " , " << robot_pose_.position.y << std::endl;
 
                 // Convert centroids to points
                 int x_int, y_int;
-                // int centroid_Xpts[region_c]={};
-                // int centroid_Ypts[region_c]={};
-                // double dist_arr[region_c]={};
-                int centroid_Xpts[10]={};
-                int centroid_Ypts[10]={};
+                double centroid_Xpts[10]={};
+                double centroid_Ypts[10]={};
                 double dist_arr[10]={};
                 point.x = 1.0;
                 point.y = 1.0;
+                int ugh_count = 0;
 
-                for (int t = 0; t < region_c; t++)
+                for (int t = 0; t < 10; t++)
                 {
                     double dist;
                     point.x = (centroids[t] % FE_tb3_0_map.info.width)*FE_tb3_0_map.info.resolution + FE_tb3_0_map.info.origin.position.x;
                     point.y = floor(centroids[t]/FE_tb3_0_map.info.width)*FE_tb3_0_map.info.resolution + FE_tb3_0_map.info.origin.position.y;
-                    // std::cout << "Centroid point is (double) " << point.x << " , " << point.y << std::endl;
-                    // int x_int = (int) point.x;
-                    // int y_int = (int) point.y;
-                    int x_int = (int) point.x;
-                    int y_int = (int) point.y;
 
-                    if((x_int == 0) && (y_int == 0))
+                    if((point.x == 0.0) && (point.y== 0.0))
                     {
                         std::cout << "Zero values" <<std::endl;
                     }
                     else
                     {
-                        std::cout << "Centroid point is (int) " << x_int << " , " << y_int << std::endl;
-                        centroid_Xpts[t] = x_int;
-                        centroid_Ypts[t] = y_int;
+                        std::cout << "Centroid point is " << point.x << " , " << point.y << std::endl;
+                        centroid_Xpts[ugh_count] = point.x;
+                        centroid_Ypts[ugh_count] = point.y;
                         dist = pow(((pow(point.x - robot_pose_.position.x,2)) + (pow(point.y - robot_pose_.position.y,2))) , 0.5);
-                        // std::cout << "Distances are " << dist << std::endl;
-                        dist_arr[t] = dist;
+                        dist_arr[ugh_count] = dist;
+                        ugh_count++;
                     }
                 }
 
@@ -267,16 +250,15 @@ class FrontExpl
                     if (dist_arr[u] < smallest)
                     {
                         smallest = dist_arr[u];
+                        // std::cout << "Smallest distance value is " << smallest << std::endl;
                         move_to_pt = u;
                         std::cout << "Index we need to move to is ... (should be less than 10) " << move_to_pt << std::endl;
-                        std::cout << "Fuck me " << centroid_Xpts[move_to_pt] << " , " <<  centroid_Ypts[move_to_pt]<< std::endl;
                     }
                 }
 
-                std::cout << "Centroid we gonna go is " << centroid_Xpts[0] << " , " <<  centroid_Ypts[0]<< std::endl;
+                // std::cout << "Centroid we gonna go is " << centroid_Xpts[0] << " , " <<  centroid_Ypts[0]<< std::endl;
 
                 // Move to goal
-                // move_base_msgs::MoveBaseGoal goal_init;
                 goal_init.target_pose.header.frame_id = "map"; // Needs to be AN ACTUAL FRAME
                 goal_init.target_pose.header.stamp = ros::Time();
                 goal_init.target_pose.pose.position.x = robot_pose_.position.x - 4.0;
@@ -285,10 +267,8 @@ class FrontExpl
 
                 goal.target_pose.header.frame_id = "map"; // Needs to be AN ACTUAL FRAME
                 goal.target_pose.header.stamp = ros::Time();
-                // goal.target_pose.pose.position.x = centroid_Xpts[move_to_pt];
-                // goal.target_pose.pose.position.y = centroid_Ypts[move_to_pt];
-                goal.target_pose.pose.position.x = centroid_Xpts[0];
-                goal.target_pose.pose.position.y = centroid_Ypts[0];
+                goal.target_pose.pose.position.x = centroid_Xpts[move_to_pt];
+                goal.target_pose.pose.position.y = centroid_Ypts[move_to_pt];
                 goal.target_pose.pose.orientation.w = 1.0;
 
                 if(goal_c == 0)
@@ -354,6 +334,7 @@ class FrontExpl
         // MoveBaseClient ac("move_base", true);
         geometry_msgs::Point point;
         int move_to_pt = 0;
+        geometry_msgs::TransformStamped transformS;
 
 };
 
