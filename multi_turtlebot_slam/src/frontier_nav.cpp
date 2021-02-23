@@ -7,20 +7,15 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
-// #include <visualization_msgs/Marker.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <vector>
 #include <iostream>
 #include <cmath> 
-// #include "nav_msgs/MapMetaData.h"
 
 // define global message 
 nav_msgs::OccupancyGrid map_0_msg;
 nav_msgs::OccupancyGrid FE_tb3_0_map, FE_tb3_1_map, region_map;
-// tf2_ros::Buffer tfBuffer;
-// tf2_ros::TransformListener tfListener(tfBuffer);
-// geometry_msgs::Pose robot_pose_;
 
 /// / \brief Grabs the position of the robot from the pose subscriber and stores it
 /// / \param msg - pose message
@@ -30,12 +25,13 @@ void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr & msg)
   map_0_msg.header = msg->header;
   map_0_msg.info = msg->info;
   map_0_msg.data = msg->data;
+
+  std::cout << "tb3_0/map origin is " << map_0_msg.info.origin.position.x << " , " << map_0_msg.info.origin.position.y << std::endl;
 }
 
 
 int main(int argc, char * argv[])
 {
-
   ros::init(argc, argv, "frontier_exploration_node");
   ros::NodeHandle nh;
 
@@ -45,16 +41,31 @@ int main(int argc, char * argv[])
   std::string map_frame = "/tb3_0/map";
   std::string body_frame = "tb3_0/base_footprint";
 
-  typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>  MoveBaseClient;
-
-  // Create the initpose publisher and subscriber
+    // Create the initpose publisher and subscriber
   const auto tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edge/map", 100);
   const auto region_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("region/map", 100);
-//   const auto tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("ughhhh", 100);
   const auto map_0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("tb3_0/map", 100, mapCallback);
 
-  ros::Rate loop_rate(100);
+  typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
+  MoveBaseClient ac("/tb3_0/move_base", true);
 
+  // Wait 60 seconds for the action server to become available
+  //wait for the action server to come up
+  while(!ac.waitForServer(ros::Duration(5.0)))
+  {
+    ROS_INFO("Waiting for the move_base action server to come up");
+  }
+  ROS_INFO("Connected to move base server");
+
+//   boost::shared_ptr<nav_msgs::OccupancyGrid const> got_msg;
+//   got_msg = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>("tb3_0/map", ros::Duration(10));
+//   if(got_msg != NULL)
+//   {
+//     ROS_INFO("No map messages recieved yet");
+//   }
+
+  ros::Rate loop_rate(40);
+  
   while (ros::ok())
   {
         FE_tb3_0_map.header.frame_id = "FE_tb3_0_map";
@@ -169,13 +180,13 @@ int main(int argc, char * argv[])
 
                 else
                 {
-                    std::cout << "Size of group is " << group_c << std::endl;
+                    // std::cout << "Size of group is " << group_c << std::endl;
                     int centroid = group_c / 2;
-                    std::cout << "Centroid value is " << centroid << std::endl;
-                    std::cout << "centroid location is " << temp_group[centroid] << std::endl;
+                    // std::cout << "Centroid value is " << centroid << std::endl;
+                    // std::cout << "centroid location is " << temp_group[centroid] << std::endl;
                     centroids[region_c] = temp_group[centroid];
                     region_c++;
-                    std::cout << "Number of regions is now " << region_c << std::endl;
+                    // std::cout << "Number of regions is now " << region_c << std::endl;
                 }
 
                 // Reset group array and counter
@@ -198,13 +209,17 @@ int main(int argc, char * argv[])
         transformS.header.frame_id = map_frame;
         transformS.child_frame_id = body_frame;
 
-        robot_pose_.position.x = transformS.transform.translation.x;
-        robot_pose_.position.y = transformS.transform.translation.y;
+        // robot_pose_.position.x = transformS.transform.translation.x;
+        // robot_pose_.position.y = transformS.transform.translation.y;
+        robot_pose_.position.x = -7.0;
+        robot_pose_.position.y = -1.0;
         robot_pose_.position.z = 0.0;
         robot_pose_.orientation.x = transformS.transform.rotation.x;
         robot_pose_.orientation.y = transformS.transform.rotation.y;
         robot_pose_.orientation.z = transformS.transform.rotation.z;
         robot_pose_.orientation.w = transformS.transform.rotation.w;
+
+        // std::cout << "Robot pose is " << robot_pose_.position.x << " , " << robot_pose_.position.y << std::endl;
 
         // Convert centroids to points
         int centroid_Xpts[region_c]={};
@@ -217,10 +232,10 @@ int main(int argc, char * argv[])
             double dist;
             point.x = (centroids[t] % FE_tb3_0_map.info.width)*FE_tb3_0_map.info.resolution + FE_tb3_0_map.info.origin.position.x;
             point.y = floor(centroids[t]/FE_tb3_0_map.info.width)*FE_tb3_0_map.info.resolution + FE_tb3_0_map.info.origin.position.y;
-            std::cout << "Centroid point is (double) " << point.x << " , " << point.y << std::endl;
+            // std::cout << "Centroid point is (double) " << point.x << " , " << point.y << std::endl;
             int x_int = (int) point.x;
             int y_int = (int) point.y;
-            std::cout << "Centroid point is (int) " << x_int << " , " << y_int << std::endl;
+            // std::cout << "Centroid point is (int) " << x_int << " , " << y_int << std::endl;
             centroid_Xpts[t] = x_int;
             centroid_Ypts[t] = y_int;
 
@@ -234,139 +249,55 @@ int main(int argc, char * argv[])
         int move_to_pt;
         for(int u = 0; u < region_c-1 ; u++)
         {
-            std::cout << "Current distance value is " << dist_arr[u] << std::endl;
+            // std::cout << "Current distance value is " << dist_arr[u] << std::endl;
             if (dist_arr[u] < smallest)
             {
-                std::cout << "Smallest was " << smallest << std::endl;
+                // std::cout << "Smallest was " << smallest << std::endl;
                 smallest = dist_arr[u];
-                std::cout << "Now smallest is " << smallest << std::endl;
+                // std::cout << "Now smallest is " << smallest << std::endl;
                 move_to_pt = u;
-                std::cout << "Index we need to move to is ... " << move_to_pt << std::endl;
+                // std::cout << "Index we need to move to is ... " << move_to_pt << std::endl;
             }
         }
 
-        std::cout << "Moving to point " << centroid_Xpts[move_to_pt] << " , " << centroid_Ypts[move_to_pt] << std::endl;
+        // Move to goal
+        move_base_msgs::MoveBaseGoal goal;
+        goal.target_pose.header.frame_id = "tb3_0/map"; // Needs to be AN ACTUAL FRAME
+        goal.target_pose.header.stamp = ros::Time::now();
+        // goal.target_pose.pose.position.x = centroid_Xpts[move_to_pt];
+        // goal.target_pose.pose.position.y =  centroid_Ypts[move_to_pt];
+        goal.target_pose.pose.position.x = -7.0;
+        goal.target_pose.pose.position.y =  -2.0;
+        goal.target_pose.pose.orientation.w = 1.0;
 
-        if ((centroid_Xpts[move_to_pt] == 0) && (centroid_Ypts[move_to_pt] == 0))
+        // std::cout << "Goal is " << goal.target_pose.pose.position.x << " , " <<  goal.target_pose.pose.position.y << std::endl;
+
+        if ((goal.target_pose.pose.position.x == 0) && (goal.target_pose.pose.position.y == 0))
         {
-
         }
 
         else
         {
-            // Move to goal
-            MoveBaseClient ac("tb3_0/move_base", true);
-
-            // Wait 60 seconds for the action server to become available
-            // ROS_INFO("Waiting for the move_base action server");
-            // ac.waitForServer(ros::Duration(60));
-            // ROS_INFO("Connected to move base server");
-
-            // Send a goal to move_base
-            //The attribute setting of the target
-
-            // move_base_msgs::MoveBaseGoal goal;
-            // goal.target_pose.header.frame_id = "tb3_0/map";
-            // goal.target_pose.header.stamp = ros::Time::now();
-            // goal.target_pose.pose.position.x = centroid_Xpts[move_to_pt];
-            // goal.target_pose.pose.position.y =  centroid_Ypts[move_to_pt];
-            // goal.target_pose.pose.orientation.w = 1;
-
-            // ROS_INFO("Sending goal");
-            // ac.sendGoal(goal);
-            // // Wait for the action to return
-            // ac.waitForResult();
-            // if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-            // {
-            //     ROS_INFO("You have reached the goal!");
-            // }
-            // else
-            // {
-            //     ROS_INFO("The base failed for some reason");
-            // }
+            std::cout << "Goal is " << goal.target_pose.pose.position.x << " , " <<  goal.target_pose.pose.position.y << std::endl;
+            ROS_INFO("Sending goal");
+            ac.sendGoal(goal);
+            std::cout << "Sent Goal" <<std::endl;
+            // Wait for the action to return
+            ac.waitForResult();
+            std::cout << "Waiting for result" <<std::endl;
+            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+            {
+                ROS_INFO("You have reached the goal!");
+            }
+            else
+            {
+                ROS_INFO("The base failed for some reason");
+            }
         }
-        
+
         ros::spinOnce();
         loop_rate.sleep();
     }
 
   return 0;
 }
-
-// std::cout << "Diff between prev and next location values " << prev_value << " , " << next_value << std::endl;
-
-// if ((prev_value == 1) || (prev_value == FE_tb3_0_map.info.width) || (prev_value == FE_tb3_0_map.info.width -1) || (prev_value == FE_tb3_0_map.info.width + 1))
-// // if (prev_value == 1) 
-// {
-//     // Add to a region array
-//     region[j] = all_edges[q];
-//     region_map.data[all_edges[q]] = 60;
-//     j++;
-
-// }
-
-// if (prev_value == FE_tb3_0_map.info.width)
-// // if (prev_value == 1) 
-// {
-//     // Add to a region array
-//     region[j] = all_edges[q];
-//     region_map.data[all_edges[q]] = 60;
-//     j++;
-
-// }
-
-// else if (prev_value == FE_tb3_0_map.info.width -1)
-// // if (prev_value == 1) 
-// {
-//     // Add to a region array
-//     region[j] = all_edges[q];
-//     region_map.data[all_edges[q]] = 60;
-//     j++;
-
-// }
-
-// else if (prev_value == FE_tb3_0_map.info.width + 1)
-// // if (prev_value == 1) 
-// {
-//     // Add to a region array
-//     region[j] = all_edges[q];
-//     region_map.data[all_edges[q]] = 60;
-//     j++;
-
-// }
-
-// if (next_value == 1)
-// // else if (next_value == 1)
-// {
-//     // Add to a region array
-//     region[j] = all_edges[q];
-//     region_map.data[all_edges[q]] = 70;
-//     j++;
-// }
-
-// else if (next_value == FE_tb3_0_map.info.width)
-// // else if (next_value == 1)
-// {
-//     // Add to a region array
-//     region[j] = all_edges[q];
-//     region_map.data[all_edges[q]] = 70;
-//     j++;
-// }
-
-// else if (next_value == FE_tb3_0_map.info.width -1)
-// // else if (next_value == 1)
-// {
-//     // Add to a region array
-//     region[j] = all_edges[q];
-//     region_map.data[all_edges[q]] = 70;
-//     j++;
-// }
-
-// else if (next_value == FE_tb3_0_map.info.width + 1)
-// // else if (next_value == 1)
-// {
-//     // Add to a region array
-//     region[j] = all_edges[q];
-//     region_map.data[all_edges[q]] = 70;
-//     j++;
-// }

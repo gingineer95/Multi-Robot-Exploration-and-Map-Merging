@@ -8,6 +8,7 @@ Panels:
         - /TF1/Frames1
         - /tb3_0 Local Map1/Costmap1
         - /tb3_0 Local Map1/Polygon1
+        - /tb3_0 Gocal Map1
         - /tb3_0 Gocal Map1/Costmap1
         - /tb3_0 Gocal Map1/Polygon1
         - /tb3_1 Local Map1/Costmap1
@@ -70,6 +71,8 @@ Visualization Manager:
         new_tb3_0_map:
           Value: true
         new_tb3_1_map:
+          Value: true
+        served_map:
           Value: true
         tb3_0/base_footprint:
           Value: true
@@ -201,6 +204,8 @@ Visualization Manager:
                   {}
             tb3_1/tb3_1/map:
               {}
+        served_map:
+          {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -435,7 +440,7 @@ Visualization Manager:
           Topic: /tb3_0/move_base/global_costmap/footprint
           Unreliable: false
           Value: true
-      Enabled: false
+      Enabled: true
       Name: tb3_0 Gocal Map
     - Class: rviz/Group
       Displays:
@@ -483,6 +488,94 @@ Visualization Manager:
           Value: true
       Enabled: false
       Name: tb3_1 Global Map
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: tb3_0/Nav_Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /tb3_1/move_base/NavfnROS/plan
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: tb3_0/Goal_Pose
+      Queue Size: 10
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic: /tb3_1/move_base/current_goal
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: tb3_0/ROS_Global_Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /tb3_1/move_base/TrajectoryPlannerROS/global_plan
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: tb3_0/ROS_Local_Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /tb3_1/move_base/TrajectoryPlannerROS/local_plan
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
