@@ -138,7 +138,6 @@ class FrontExpl
 
                 int region[c-1] = {};
                 int temp_group[c-1] = {};
-                // int total_regions[10] = {};
                 int centroids[20] = {};
                 int j = 0;
                 int group_c = 0;
@@ -194,8 +193,7 @@ class FrontExpl
                 region_map_pub.publish(region_map);
 
                 // Find current location and move to the nearest centroid
-                //Get robot pose
-                // geometry_msgs::TransformStamped transformS;
+                // Get robot pose
                 transformS = tfBuffer.lookupTransform(body_frame, map_frame, ros::Time(0), ros::Duration(3.0));
 
                 transformS.header.stamp = ros::Time();
@@ -233,7 +231,7 @@ class FrontExpl
                     }
                     else
                     {
-                        std::cout << "Centroid point is " << point.x << " , " << point.y << std::endl;
+                        // std::cout << "Centroid point is " << point.x << " , " << point.y << std::endl;
                         centroid_Xpts[ugh_count] = point.x;
                         centroid_Ypts[ugh_count] = point.y;
                         dist = pow(((pow(point.x - robot_pose_.position.x,2)) + (pow(point.y - robot_pose_.position.y,2))) , 0.5);
@@ -242,17 +240,21 @@ class FrontExpl
                     }
                 }
 
-                //Find smallest distance
-                double smallest = dist_arr[0];
+                //Find spot to move to that is close
+                double smallest = 2.0;
+                // int ugh_count = 0;
                 for(int u = 0; u < 10 ; u++)
                 {
-                    // std::cout << "Current distance value is " << dist_arr[u] << " for index " << u << std::endl;
-                    if (dist_arr[u] < smallest)
+                    std::cout << "Current distance value is " << dist_arr[u] << u << std::endl;
+                    if (dist_arr[u] < 1.0)
+                    {
+                    }
+                    else if (dist_arr[u] < smallest)
                     {
                         smallest = dist_arr[u];
-                        // std::cout << "Smallest distance value is " << smallest << std::endl;
+                        std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
                         move_to_pt = u;
-                        std::cout << "Index we need to move to is ... (should be less than 10) " << move_to_pt << std::endl;
+                        // std::cout << "Index we need to move to is ... (should be less than 10) " << move_to_pt << std::endl;
                     }
                 }
 
