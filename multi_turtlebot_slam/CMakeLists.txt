@@ -143,11 +143,12 @@ include_directories(
 add_executable(${PROJECT_NAME}_node src/init_pose.cpp)
 add_executable(${PROJECT_NAME}_map_node src/map_metadata.cpp)
 add_executable(${PROJECT_NAME}_front_expl src/frontier_nav.cpp)
+add_executable(${PROJECT_NAME}_one_tb src/one_tb_FE_improved.cpp)
 
 # add_executable(turtle_tf2_listener src/turtle_tf2_listener.cpp)
-target_link_libraries(${PROJECT_NAME}_front_expl
- ${catkin_LIBRARIES}
-)
+# target_link_libraries(${PROJECT_NAME}_front_expl
+#  ${catkin_LIBRARIES}
+# )
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -167,6 +168,9 @@ target_link_libraries(${PROJECT_NAME}_map_node
   ${catkin_LIBRARIES}
 )
 target_link_libraries(${PROJECT_NAME}_front_expl
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(${PROJECT_NAME}_one_tb
   ${catkin_LIBRARIES}
 )
 
@@ -193,6 +197,9 @@ install(TARGETS ${PROJECT_NAME}_map_node
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(TARGETS ${PROJECT_NAME}_front_expl
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(TARGETS ${PROJECT_NAME}_one_tb
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

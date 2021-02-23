@@ -1,0 +1,82 @@
+<!-- <launch> -->
+  <!-- Arguments -->
+  <!-- <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="first_tb3"  default="tb3_0"/>
+  <arg name="second_tb3" default="tb3_1"/>
+  <arg name="map_file" default="$(find multi_turtlebot_slam)/maps/map.yaml"/> -->
+
+    <!-- Map server -->
+  <!-- <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)">
+    <param name="frame_id" value ="served_map"/>
+    <remap from="map" to="served_map"/>
+  </node> -->
+
+  <!-- Open house in gazebo -->
+    <!-- <include file="$(find multi_turtlebot_slam)/launch/one_tb3_0.launch" >
+      <arg name="init_pose" value="-x -7.0 -y -1.0 -z 0.0" />
+      <arg name="robot_name"  value="Robot1" />
+    </include> -->
+
+  <!-- Open slam for each ns -->
+  <!-- <include file = "$(find multi_turtlebot_slam)/launch/kailey_online_synch.launch">
+    <arg name="ns"  value="$(arg first_tb3)"/>
+  </include> -->
+
+  <!-- Open rviz for two robots -->
+  <!-- <node pkg="rviz" type="rviz" name="rviz"/> -->
+    <!-- args="-d $(find multi_turtlebot_slam)/config/two_tb.rviz"/> -->
+
+  <!-- start the move_base, all the costmaps, cmd_vel and odom and DWA planner -->
+  <!-- <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
+    <arg name="model" value="burger" />
+    <arg name="move_forward_only" value="0"/>
+  </include> -->
+
+  <!-- Open move_base for each ns -->
+  <!-- Seems like we're not getting the map right now -->
+  <!-- <group ns = "$(arg first_tb3)"> -->
+  <!-- <include file="$(find multi_turtlebot_slam)/launch/kailey_move_base.launch">
+        <arg name="ns"  value="$(arg first_tb3)"/>
+  </include> -->
+  <!-- </group> -->
+
+<!-- </launch> -->
+
+
+<launch>
+    <!-- Define that we're using gazebo, the robot's model, and if we want to open rviz and move forward-->
+    <arg name = "gaz" default = "1"/>
+    <arg name = "model" default = "burger"/>
+    <arg name="open_rviz" default="true"/>
+    <arg name="move_forward_only" default="false"/>
+    <param name="/use_sim_time" value="true"/>
+
+    <!-- Open the "house" in gazebo -->
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" 
+        if = "$(eval arg('gaz') == 1)"
+        pass_all_args = "true">
+    </include> 
+
+    <!-- Use slam_toolbox's localization method -->
+    <include file="$(find slam_toolbox)/online_sync.launch"/>
+
+    <!-- Turtlebot3 bringup, with description and robot_state_pub -->
+    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+        <arg name="model" value="$(arg model)" />
+    </include>
+
+    <!-- start the move_base, all the costmaps, cmd_vel and odom and DWA planner -->
+    <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
+        <arg name="model" value="$(arg model)" />
+        <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+    </include>
+
+    <!-- Open rviz -->
+    <group if="$(arg open_rviz)"> 
+        <node pkg="rviz" type="rviz" name="rviz" required="true"
+            args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/>
+    </group>
+
+</launch>
