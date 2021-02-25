@@ -1,7 +1,7 @@
 <launch>    
   <arg name="ns"  default="tb3_0"/>
-  <arg name="cmd_vel_topic" default="/cmd_vel" />
-  <arg name="odom_topic" default="$(arg ns)/odom" />
+  <!-- <arg name="cmd_vel_topic" default="$(arg ns)/cmd_vel" />
+  <arg name="odom_topic" default="$(arg ns)/odom" /> -->
   <arg name = "robot_base_frame" default = "$(arg ns)/base_footprint"/>
 
   <!-- Define your move_base node -->
@@ -16,8 +16,8 @@
     <rosparam file="$(find turtlebot3_navigation)/param/move_base_params.yaml" command="load" />
     <rosparam file="$(find turtlebot3_navigation)/param/dwa_local_planner_params_burger.yaml" command="load" />
 
-    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
-    <remap from="odom" to="$(arg odom_topic)"/>
+    <!-- <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+    <remap from="odom" to="$(arg odom_topic)"/> -->
     <remap from="robot_base_frame" to="$(arg robot_base_frame)"/>
     <remap from="/map" to="$(arg ns)/map"/>
 

@@ -143,7 +143,10 @@ include_directories(
 add_executable(${PROJECT_NAME}_node src/init_pose.cpp)
 add_executable(${PROJECT_NAME}_map_node src/map_metadata.cpp)
 add_executable(${PROJECT_NAME}_front_expl src/frontier_nav.cpp)
-add_executable(${PROJECT_NAME}_one_tb src/one_tb_FE_improved.cpp)
+add_executable(${PROJECT_NAME}_improved src/one_tb_FE_improved.cpp)
+add_executable(${PROJECT_NAME}_one_tb src/tb3_0_FE.cpp)
+add_executable(${PROJECT_NAME}_other_tb src/tb3_1_FE.cpp)
+add_executable(${PROJECT_NAME}_func src/one_tb_FE_func.cpp)
 
 # add_executable(turtle_tf2_listener src/turtle_tf2_listener.cpp)
 # target_link_libraries(${PROJECT_NAME}_front_expl
@@ -170,7 +173,16 @@ target_link_libraries(${PROJECT_NAME}_map_node
 target_link_libraries(${PROJECT_NAME}_front_expl
   ${catkin_LIBRARIES}
 )
+target_link_libraries(${PROJECT_NAME}_improved
+  ${catkin_LIBRARIES}
+)
 target_link_libraries(${PROJECT_NAME}_one_tb
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(${PROJECT_NAME}_other_tb
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(${PROJECT_NAME}_func
   ${catkin_LIBRARIES}
 )
 
@@ -199,7 +211,16 @@ install(TARGETS ${PROJECT_NAME}_map_node
 install(TARGETS ${PROJECT_NAME}_front_expl
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+install(TARGETS ${PROJECT_NAME}_improved
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 install(TARGETS ${PROJECT_NAME}_one_tb
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(TARGETS ${PROJECT_NAME}_other_tb
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(TARGETS ${PROJECT_NAME}_func
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

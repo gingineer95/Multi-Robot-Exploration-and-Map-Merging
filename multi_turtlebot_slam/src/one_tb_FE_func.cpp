@@ -40,6 +40,41 @@ class FrontExpl
 
         }
 
+        void neighborhood(int cell)
+        {
+            // Store frontier edges
+            below_before_i = cell - FE_tb3_0_map.info.width - 1;
+            below_i = cell - FE_tb3_0_map.info.width;
+            below_after_i = cell - FE_tb3_0_map.info.width + 1;
+            before_i = cell-1;
+            after_i = cell+1;
+            top_before_i = cell + FE_tb3_0_map.info.width - 1;
+            top_i = cell + FE_tb3_0_map.info.width;
+            top_after_i = cell + FE_tb3_0_map.info.width + 1;
+
+            below_before = FE_tb3_0_map.data[below_before_i];
+            below = FE_tb3_0_map.data[below_i];
+            below_after = FE_tb3_0_map.data[below_after_i];
+            before = FE_tb3_0_map.data[before_i];
+            after = FE_tb3_0_map.data[after_i];
+            top_before = FE_tb3_0_map.data[top_before_i];
+            top = FE_tb3_0_map.data[top_i];
+            top_after = FE_tb3_0_map.data[top_after_i];
+        }
+
+        void forward_edges(int cell)
+        {
+            after_i = cell+1;
+            top_before_i = cell + FE_tb3_0_map.info.width - 1;
+            top_i = cell + FE_tb3_0_map.info.width;
+            top_after_i = cell + FE_tb3_0_map.info.width + 1;
+
+            after = FE_tb3_0_map.data[after_i];
+            top_before = FE_tb3_0_map.data[top_before_i];
+            top = FE_tb3_0_map.data[top_i];
+            top_after = FE_tb3_0_map.data[top_after_i];
+        }
+
         void main_loop()
         {
             typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
@@ -54,6 +89,7 @@ class FrontExpl
 
             tf2_ros::TransformListener tfListener(tfBuffer);
             ros::Rate loop_rate(10);
+
             while (ros::ok())
             {
                 ros::spinOnce();
@@ -79,36 +115,16 @@ class FrontExpl
                 region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
                 region_map.data = map_0_msg.data;
 
-                int below_before, below, below_after, before, after, top_before, top, top_after;
-                int below_before_i, below_i, below_after_i, before_i, after_i, top_before_i, top_i, top_after_i;
                 int c = 0;
                 int all_edges[FE_tb3_0_map.info.width * FE_tb3_0_map.info.height] = {};
 
                 // For all the points in the occupancy grid
-                // Starting one row up and on space in so that we dont have an issues with the first cell
+                // Starting one row up and on space in so that we dont have an issues with the first num_edgesell
                 for (double x = FE_tb3_0_map.info.width + 1; x < (FE_tb3_0_map.info.width * FE_tb3_0_map.info.height) - FE_tb3_0_map.info.width; x++)
                 {
                     if (FE_tb3_0_map.data[x] == -1)
                     {
-                        // Store frontier edges
-                        below_before_i = x - FE_tb3_0_map.info.width - 1;
-                        below_i = x - FE_tb3_0_map.info.width;
-                        below_after_i = x - FE_tb3_0_map.info.width + 1;
-                        before_i = x-1;
-                        after_i = x+1;
-                        top_before_i = x + FE_tb3_0_map.info.width - 1;
-                        top_i = x + FE_tb3_0_map.info.width;
-                        top_after_i = x + FE_tb3_0_map.info.width + 1;
-
-                        below_before = FE_tb3_0_map.data[below_before_i];
-                        below = FE_tb3_0_map.data[below_i];
-                        below_after = FE_tb3_0_map.data[below_after_i];
-                        before = FE_tb3_0_map.data[before_i];
-                        after = FE_tb3_0_map.data[after_i];
-                        top_before = FE_tb3_0_map.data[top_before_i];
-                        top = FE_tb3_0_map.data[top_i];
-                        top_after = FE_tb3_0_map.data[top_after_i];
-
+                        neighborhood(x);
                         int f_edge[] = {below_before, below, below_after, before, after, top_before, top, top_after};
                         int f_edge_index[] = {below_before_i, below_i, below_after_i, before_i, after_i, top_before_i, top_i, top_after_i};
                         int len = sizeof(f_edge)/sizeof(f_edge[0]);
@@ -120,12 +136,8 @@ class FrontExpl
                                 // If were actually at an edge, mark it
                                 int mark_edge = f_edge_index[i];
                                 FE_tb3_0_map.data[mark_edge] = 10;
-                                all_edges[c] = mark_edge;
-
-                                // Should really do this with vector, but I'm having issues
-                                // myvector.push_back(mark_edge);
-
-                                c++;
+                                all_edges[num_edges] = mark_edge;
+                                num_edges++;
 
                             }
                         }
@@ -133,44 +145,52 @@ class FrontExpl
                     }
                 } 
 
+                std::cout << "Number of edges is " << num_edges << std::endl;
+
                 tb3_0_FE_map_pub.publish(FE_tb3_0_map);
 
-                int region[c-1] = {};
-                int temp_group[c-1] = {};
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ALL GOOD AT GETTING EDGES
+                // NEED TO FIX HOW WERE CREATING FRONTIERS
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                // Evaluate the edges to find regions
+                // c is the number of edges
+                int region[num_edge-1] = {};
+                int temp_group[num_edge-1] = {};
                 int centroids[20] = {};
-                int j = 0;
-                int group_c = 0;
-                int region_c = 0;
+                int j = 0; // index counter for region items
+                int group_c = 0; // Counts the length of one group
+                int region_c = 0; // Counts the number of regions
 
                 for (int q=0; q < c-1; q++)
                 {
                     // std::cout << "Currently evaluating at location " << all_edges[q] << std::endl;
                     // int prev_i = q-1;
-                    int next_i = q+1;
+                    int next_i = q+1; // Next index in the edges list
 
                     // int prev_value = all_edges[q] - all_edges[prev_i];
-                    int next_value = all_edges[next_i] - all_edges[q];
+                    int cell_dist = all_edges[next_i] - all_edges[q]; // Take the difference of the next index by the current to check if theyre close
 
-                    if ((next_value == 1) || (next_value == FE_tb3_0_map.info.width) || (next_value == FE_tb3_0_map.info.width -1) || (next_value == FE_tb3_0_map.info.width + 1))
+                    if ((cell_dist == 1) || (cell_dist == FE_tb3_0_map.info.width) || (cell_dist == FE_tb3_0_map.info.width -1) || (cell_dist == FE_tb3_0_map.info.width + 1))
                     {
                         // Add to a region array
-                        region[j] = all_edges[q];
-                        region_map.data[all_edges[q]] = 70;
+                        // region[j] = all_edges[q]; // Add the frontier edge to this region group
+                        region_map.data[all_edges[q]] = 110 + (10*region_c);
                         temp_group[group_c] = all_edges[q];
                         j++;
                         group_c++;
-                        // std::cout << "ELEMENTS IN THIS GROUP ARE AT " << group_c << std::endl;
                     }
 
                     else
                     {
-                        if (group_c < 4) // frontier region too small
+                        if (group_c < 6) // frontier region too small
                         {
                         }
 
                         else
                         {
-                            // std::cout << "Size of group is " << group_c << std::endl;
+                            // std::cout << "Size of group is... (should be  >= 6) " << group_c << std::endl;
                             int centroid = group_c / 2;
                             // std::cout << "Centroid value is " << centroid << std::endl;
                             // std::cout << "centroid location is " << temp_group[centroid] << std::endl;
@@ -309,6 +329,8 @@ class FrontExpl
         geometry_msgs::Point point;
         int move_to_pt = 0;
         geometry_msgs::TransformStamped transformS;
+        int below_before, below, below_after, before, after, top_before, top, top_after;
+        int below_before_i, below_i, below_after_i, before_i, after_i, top_before_i, top_i, top_after_i;
 
 };
 

@@ -15,6 +15,9 @@ Panels:
         - /tb3_1 Local Map1/Polygon1
         - /tb3_1 Global Map1/Costmap1
         - /tb3_1 Global Map1/Polygon1
+        - /tb3_1/Nav_Path1
+        - /tb3_1/Goal_Pose1
+        - /tb3_1/ROS_Local_Path1
       Splitter Ratio: 0.36039602756500244
     Tree Height: 752
   - Class: rviz/Selection
@@ -463,7 +466,7 @@ Visualization Manager:
           Topic: /tb3_1/move_base/local_costmap/footprint
           Unreliable: false
           Value: true
-      Enabled: false
+      Enabled: true
       Name: tb3_1 Local Map
     - Class: rviz/Group
       Displays:
@@ -486,7 +489,7 @@ Visualization Manager:
           Topic: /tb3_1/move_base/global_costmap/footprint
           Unreliable: false
           Value: true
-      Enabled: false
+      Enabled: true
       Name: tb3_1 Global Map
     - Alpha: 1
       Buffer Length: 1
@@ -498,7 +501,7 @@ Visualization Manager:
       Length: 0.30000001192092896
       Line Style: Lines
       Line Width: 0.029999999329447746
-      Name: tb3_0/Nav_Path
+      Name: tb3_1/Nav_Path
       Offset:
         X: 0
         Y: 0
@@ -520,7 +523,7 @@ Visualization Manager:
       Enabled: true
       Head Length: 0.30000001192092896
       Head Radius: 0.10000000149011612
-      Name: tb3_0/Goal_Pose
+      Name: tb3_1/Goal_Pose
       Queue Size: 10
       Shaft Length: 1
       Shaft Radius: 0.05000000074505806
@@ -538,31 +541,7 @@ Visualization Manager:
       Length: 0.30000001192092896
       Line Style: Lines
       Line Width: 0.029999999329447746
-      Name: tb3_0/ROS_Global_Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Queue Size: 10
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /tb3_1/move_base/TrajectoryPlannerROS/global_plan
-      Unreliable: false
-      Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 25; 255; 0
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Lines
-      Line Width: 0.029999999329447746
-      Name: tb3_0/ROS_Local_Path
+      Name: tb3_1/ROS_Local_Path
       Offset:
         X: 0
         Y: 0
@@ -613,10 +592,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 31.269691467285156
+      Scale: 139.79971313476562
       Target Frame: map
-      X: -0.5583999156951904
-      Y: 5.280876636505127
+      X: 6.010182857513428
+      Y: -2.681770086288452
     Saved: ~
 Window Geometry:
   Displays:
