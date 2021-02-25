@@ -62,18 +62,13 @@ class FrontExpl
             top_after = FE_tb3_0_map.data[top_after_i];
         }
 
-        void forward_edges(int cell)
-        {
-            after_i = cell+1;
-            top_before_i = cell + FE_tb3_0_map.info.width - 1;
-            top_i = cell + FE_tb3_0_map.info.width;
-            top_after_i = cell + FE_tb3_0_map.info.width + 1;
-
-            after = FE_tb3_0_map.data[after_i];
-            top_before = FE_tb3_0_map.data[top_before_i];
-            top = FE_tb3_0_map.data[top_i];
-            top_after = FE_tb3_0_map.data[top_after_i];
-        }
+        // void forward_edges(int cell)
+        // {
+        //     edge_after = cell+1;
+        //     edge_top_before = cell + FE_tb3_0_map.info.width - 1;
+        //     edge_top = cell + FE_tb3_0_map.info.width;
+        //     edge_top_after = cell + FE_tb3_0_map.info.width + 1;
+        // }
 
         void main_loop()
         {
@@ -115,7 +110,7 @@ class FrontExpl
                 region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
                 region_map.data = map_0_msg.data;
 
-                int c = 0;
+                int num_edges = 0;
                 int all_edges[FE_tb3_0_map.info.width * FE_tb3_0_map.info.height] = {};
 
                 // For all the points in the occupancy grid
@@ -145,7 +140,7 @@ class FrontExpl
                     }
                 } 
 
-                std::cout << "Number of edges is " << num_edges << std::endl;
+                // std::cout << "Number of edges is " << num_edges << std::endl;
 
                 tb3_0_FE_map_pub.publish(FE_tb3_0_map);
 
@@ -155,61 +150,59 @@ class FrontExpl
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 // Evaluate the edges to find regions
-                // c is the number of edges
-                int region[num_edge-1] = {};
-                int temp_group[num_edge-1] = {};
+                int temp_group[num_edges-1] = {};
                 int centroids[20] = {};
-                int j = 0; // index counter for region items
                 int group_c = 0; // Counts the length of one group
                 int region_c = 0; // Counts the number of regions
 
-                for (int q=0; q < c-1; q++)
+                for (int q=0; q < num_edges-1; q++)
                 {
                     // std::cout << "Currently evaluating at location " << all_edges[q] << std::endl;
-                    // int prev_i = q-1;
-                    int next_i = q+1; // Next index in the edges list
+                    int next_i = q+1;
 
-                    // int prev_value = all_edges[q] - all_edges[prev_i];
-                    int cell_dist = all_edges[next_i] - all_edges[q]; // Take the difference of the next index by the current to check if theyre close
+                    int next_value = all_edges[next_i] - all_edges[q];
 
-                    if ((cell_dist == 1) || (cell_dist == FE_tb3_0_map.info.width) || (cell_dist == FE_tb3_0_map.info.width -1) || (cell_dist == FE_tb3_0_map.info.width + 1))
+                    if ((next_value == 1) || (next_value == FE_tb3_0_map.info.width) || (next_value == FE_tb3_0_map.info.width -1) || (next_value == FE_tb3_0_map.info.width + 1))
                     {
                         // Add to a region array
-                        // region[j] = all_edges[q]; // Add the frontier edge to this region group
-                        region_map.data[all_edges[q]] = 110 + (10*region_c);
+                        region_map.data[all_edges[q]] = 110 + (20*region_c);
+                        region_map.data[all_edges[q+1]] = 110 + (20*region_c);
                         temp_group[group_c] = all_edges[q];
-                        j++;
                         group_c++;
+                        // std::cout << "ELEMENTS IN THIS GROUP ARE AT " << group_c << std::endl;
                     }
 
                     else
                     {
-                        if (group_c < 6) // frontier region too small
+                        if (group_c < 5) // frontier region too small
                         {
                         }
-
+                        
                         else
                         {
-                            // std::cout << "Size of group is... (should be  >= 6) " << group_c << std::endl;
+
+                            // std::cout << "Size of group is " << group_c << std::endl;
                             int centroid = group_c / 2;
-                            // std::cout << "Centroid value is " << centroid << std::endl;
-                            // std::cout << "centroid location is " << temp_group[centroid] << std::endl;
+                            ///////////////////////////////////////
+                            // Write something that says if we move to close to wall, skip
+                            //////////////////////////////////////
+                            // std::cout << "Int centroid is " << centroid << std::endl;
                             centroids[region_c] = temp_group[centroid];
                             region_c++;
-                            std::cout << "Number of regions is now " << region_c << std::endl;
+                            // std::cout << "Number of regions is now " << region_c << std::endl;
                         }
 
                         // Reset group array and counter
                         group_c = 0;
-                        int temp_group[c-1] = {};
+                        int temp_group[num_edges-1] = {};
                     }
                 }
 
-                // Reset 
-                c = 0;
-                all_edges[FE_tb3_0_map.info.width * FE_tb3_0_map.info.height] = {};
-
                 region_map_pub.publish(region_map);
+
+                // Reset 
+                num_edges = 0;
+                all_edges[FE_tb3_0_map.info.width * FE_tb3_0_map.info.height] = {};
 
                 // Find current location and move to the nearest centroid
                 // Get robot pose
@@ -227,56 +220,62 @@ class FrontExpl
                 robot_pose_.orientation.z = transformS.transform.rotation.z;
                 robot_pose_.orientation.w = transformS.transform.rotation.w;
 
-                // std::cout << "Robot pose is " << robot_pose_.position.x << " , " << robot_pose_.position.y << std::endl;
-
                 // Convert centroids to points
-                int x_int, y_int;
                 double centroid_Xpts[10]={};
                 double centroid_Ypts[10]={};
                 double dist_arr[10]={};
-                point.x = 1.0;
-                point.y = 1.0;
-                int ugh_count = 0;
+                point.x = 0.0;
+                point.y = 0.0;
+                int centroid_c = 0;
 
                 for (int t = 0; t < 10; t++)
                 {
                     double dist;
-                    point.x = (centroids[t] % FE_tb3_0_map.info.width)*FE_tb3_0_map.info.resolution + FE_tb3_0_map.info.origin.position.x;
-                    point.y = floor(centroids[t]/FE_tb3_0_map.info.width)*FE_tb3_0_map.info.resolution + FE_tb3_0_map.info.origin.position.y;
+                    point.x = (centroids[t] % region_map.info.width)*region_map.info.resolution + region_map.info.origin.position.x;
+                    point.y = floor(centroids[t] / region_map.info.width)*region_map.info.resolution + region_map.info.origin.position.y;
 
-                    if((point.x == 0.0) && (point.y== 0.0))
+                    if((point.x == last_cent_x) || (point.y== last_cent_y))
                     {
-                        std::cout << "Zero values" <<std::endl;
+                        std::cout << "Got the same centroid again, pass " <<std::endl;
                     }
                     else
                     {
                         // std::cout << "Centroid point is " << point.x << " , " << point.y << std::endl;
-                        centroid_Xpts[ugh_count] = point.x;
-                        centroid_Ypts[ugh_count] = point.y;
+                        centroid_Xpts[centroid_c] = point.x;
+                        centroid_Ypts[centroid_c] = point.y;
                         dist = pow(((pow(point.x - robot_pose_.position.x,2)) + (pow(point.y - robot_pose_.position.y,2))) , 0.5);
-                        dist_arr[ugh_count] = dist;
-                        ugh_count++;
+                        dist_arr[centroid_c] = dist;
+                        centroid_c++;
                     }
                 }
 
                 //Find spot to move to that is close
-                double smallest = 4.0;
+                double smallest = 10.0;
                 for(int u = 0; u < 10 ; u++)
                 {
                     // std::cout << "Current distance value is " << dist_arr[u] << u << std::endl;
-                    if (dist_arr[u] < 1.5)
+                    if (dist_arr[u] < 2.0)
                     {
+                        // continue;
                     }
                     else if (dist_arr[u] < smallest)
                     {
                         smallest = dist_arr[u];
-                        std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
+                        // std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
                         move_to_pt = u;
                         // std::cout << "Index we need to move to is ... (should be less than 10) " << move_to_pt << std::endl;
                     }
+                    else
+                    {
+                    }
                 }
 
-                // std::cout << "Centroid we gonna go is " << centroid_Xpts[0] << " , " <<  centroid_Ypts[0]<< std::endl;
+                std::cout << "Centroid we gonna go is " << centroid_Xpts[move_to_pt] << " , " <<  centroid_Ypts[move_to_pt] << std::endl;
+                std::cout << "At a distance of " << smallest << std::endl;
+                last_cent_x = centroid_Xpts[move_to_pt];
+                last_cent_y = centroid_Ypts[move_to_pt];
+
+                // STORE LAST CENTROID POINT AND SAY IF WE JUST WENT THERE, DONT GO AGAIN
 
                 goal.target_pose.header.frame_id = "map"; // Needs to be AN ACTUAL FRAME
                 goal.target_pose.header.stamp = ros::Time();
@@ -284,7 +283,7 @@ class FrontExpl
                 goal.target_pose.pose.position.y = centroid_Ypts[move_to_pt];
                 goal.target_pose.pose.orientation.w = 1.0;
 
-                std::cout << "Goal is " << goal.target_pose.pose.position.x << " , " <<  goal.target_pose.pose.position.y << std::endl;
+                // std::cout << "Goal is " << goal.target_pose.pose.position.x << " , " <<  goal.target_pose.pose.position.y << std::endl;
                 ROS_INFO("Sending goal");
                 ac.sendGoal(goal);
 
@@ -331,6 +330,10 @@ class FrontExpl
         geometry_msgs::TransformStamped transformS;
         int below_before, below, below_after, before, after, top_before, top, top_after;
         int below_before_i, below_i, below_after_i, before_i, after_i, top_before_i, top_i, top_after_i;
+        int edge_after, edge_top_before, edge_top, edge_top_after;
+        int edge_after_i, edge_top_before_i, edge_top_i, edge_top_after_i;
+        double last_cent_x = 0.0;
+        double last_cent_y = 0.0;
 
 };
 

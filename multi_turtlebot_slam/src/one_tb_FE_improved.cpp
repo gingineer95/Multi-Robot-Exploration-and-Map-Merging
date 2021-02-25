@@ -135,29 +135,24 @@ class FrontExpl
 
                 tb3_0_FE_map_pub.publish(FE_tb3_0_map);
 
-                int region[c-1] = {};
                 int temp_group[c-1] = {};
                 int centroids[20] = {};
-                int j = 0;
                 int group_c = 0;
                 int region_c = 0;
 
                 for (int q=0; q < c-1; q++)
                 {
                     // std::cout << "Currently evaluating at location " << all_edges[q] << std::endl;
-                    // int prev_i = q-1;
                     int next_i = q+1;
 
-                    // int prev_value = all_edges[q] - all_edges[prev_i];
                     int next_value = all_edges[next_i] - all_edges[q];
 
                     if ((next_value == 1) || (next_value == FE_tb3_0_map.info.width) || (next_value == FE_tb3_0_map.info.width -1) || (next_value == FE_tb3_0_map.info.width + 1))
                     {
                         // Add to a region array
-                        region[j] = all_edges[q];
-                        region_map.data[all_edges[q]] = 70;
+                        region_map.data[all_edges[q]] = 110 + (10*region_c);
+                        region_map.data[all_edges[q+1]] = 110 + (10*region_c);
                         temp_group[group_c] = all_edges[q];
-                        j++;
                         group_c++;
                         // std::cout << "ELEMENTS IN THIS GROUP ARE AT " << group_c << std::endl;
                     }
@@ -172,8 +167,6 @@ class FrontExpl
                         {
                             // std::cout << "Size of group is " << group_c << std::endl;
                             int centroid = group_c / 2;
-                            // std::cout << "Centroid value is " << centroid << std::endl;
-                            // std::cout << "centroid location is " << temp_group[centroid] << std::endl;
                             centroids[region_c] = temp_group[centroid];
                             region_c++;
                             std::cout << "Number of regions is now " << region_c << std::endl;
