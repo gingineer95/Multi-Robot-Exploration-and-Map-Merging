@@ -157,6 +157,7 @@ class FrontExpl
 
                 for (int q=0; q < num_edges-1; q++)
                 {
+                    neighborhood(all_edges[q]);
                     // std::cout << "Currently evaluating at location " << all_edges[q] << std::endl;
                     int next_i = q+1;
 
@@ -186,7 +187,6 @@ class FrontExpl
                             ///////////////////////////////////////
                             // Write something that says if we move to close to wall, skip
                             //////////////////////////////////////
-                            // std::cout << "Int centroid is " << centroid << std::endl;
                             centroids[region_c] = temp_group[centroid];
                             region_c++;
                             // std::cout << "Number of regions is now " << region_c << std::endl;
@@ -206,11 +206,14 @@ class FrontExpl
 
                 // Find current location and move to the nearest centroid
                 // Get robot pose
-                transformS = tfBuffer.lookupTransform(body_frame, map_frame, ros::Time(0), ros::Duration(3.0));
+                // transformS = tfBuffer.lookupTransform(body_frame, map_frame, ros::Time(0), ros::Duration(3.0));
+                transformS = tfBuffer.lookupTransform(map_frame, body_frame, ros::Time(0), ros::Duration(3.0));
 
                 transformS.header.stamp = ros::Time();
-                transformS.header.frame_id = map_frame;
-                transformS.child_frame_id = body_frame;
+                // transformS.header.frame_id = map_frame;
+                // transformS.child_frame_id = body_frame;
+                transformS.header.frame_id = body_frame;
+                transformS.child_frame_id = map_frame;
 
                 robot_pose_.position.x = transformS.transform.translation.x;
                 robot_pose_.position.y = transformS.transform.translation.y;
@@ -219,6 +222,8 @@ class FrontExpl
                 robot_pose_.orientation.y = transformS.transform.rotation.y;
                 robot_pose_.orientation.z = transformS.transform.rotation.z;
                 robot_pose_.orientation.w = transformS.transform.rotation.w;
+
+                std::cout << "Robot pose is  " << robot_pose_.position.x << " , " << robot_pose_.position.y << std::endl;
 
                 // Convert centroids to points
                 double centroid_Xpts[10]={};
@@ -236,7 +241,12 @@ class FrontExpl
 
                     if((point.x == last_cent_x) || (point.y== last_cent_y))
                     {
-                        std::cout << "Got the same centroid again, pass " <<std::endl;
+                        std::cout << "Got the same centroid again, pass " << std::endl;
+                    }
+                    // But why are we getting the map origin as a centroid...?
+                    else if((point.x < map_0_msg.info.origin.position.x + 0.05) || (point.y < map_0_msg.info.origin.position.y + 0.05))
+                    {
+                        std::cout << "Why are we even near the map origin? " << std::endl;
                     }
                     else
                     {
@@ -253,15 +263,15 @@ class FrontExpl
                 double smallest = 10.0;
                 for(int u = 0; u < 10 ; u++)
                 {
-                    // std::cout << "Current distance value is " << dist_arr[u] << u << std::endl;
-                    if (dist_arr[u] < 2.0)
+                    std::cout << "Current distance value is " << dist_arr[u] << u << std::endl;
+                    if (dist_arr[u] < 0.25)
                     {
                         // continue;
                     }
                     else if (dist_arr[u] < smallest)
                     {
                         smallest = dist_arr[u];
-                        // std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
+                        std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
                         move_to_pt = u;
                         // std::cout << "Index we need to move to is ... (should be less than 10) " << move_to_pt << std::endl;
                     }
