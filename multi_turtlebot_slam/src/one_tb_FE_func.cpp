@@ -157,7 +157,7 @@ class FrontExpl
 
                 for (int q=0; q < num_edges-1; q++)
                 {
-                    neighborhood(all_edges[q]);
+                    // neighborhood(all_edges[q]);
                     // std::cout << "Currently evaluating at location " << all_edges[q] << std::endl;
                     int next_i = q+1;
 
@@ -184,9 +184,11 @@ class FrontExpl
 
                             // std::cout << "Size of group is " << group_c << std::endl;
                             int centroid = group_c / 2;
+                            // int centroid = group_c;
                             ///////////////////////////////////////
                             // Write something that says if we move to close to wall, skip
                             //////////////////////////////////////
+                            region_map.data[all_edges[centroid]] = 125;
                             centroids[region_c] = temp_group[centroid];
                             region_c++;
                             // std::cout << "Number of regions is now " << region_c << std::endl;
@@ -206,12 +208,9 @@ class FrontExpl
 
                 // Find current location and move to the nearest centroid
                 // Get robot pose
-                // transformS = tfBuffer.lookupTransform(body_frame, map_frame, ros::Time(0), ros::Duration(3.0));
                 transformS = tfBuffer.lookupTransform(map_frame, body_frame, ros::Time(0), ros::Duration(3.0));
 
                 transformS.header.stamp = ros::Time();
-                // transformS.header.frame_id = map_frame;
-                // transformS.child_frame_id = body_frame;
                 transformS.header.frame_id = body_frame;
                 transformS.child_frame_id = map_frame;
 
@@ -226,20 +225,20 @@ class FrontExpl
                 std::cout << "Robot pose is  " << robot_pose_.position.x << " , " << robot_pose_.position.y << std::endl;
 
                 // Convert centroids to points
-                double centroid_Xpts[10]={};
-                double centroid_Ypts[10]={};
-                double dist_arr[10]={};
-                point.x = 0.0;
-                point.y = 0.0;
+                double centroid_Xpts[20]={};
+                double centroid_Ypts[20]={};
+                double dist_arr[20]={};
+                point.x = -1.0;
+                point.y = -1.0;
                 int centroid_c = 0;
 
-                for (int t = 0; t < 10; t++)
+                for (int t = 0; t < 20; t++)
                 {
                     double dist;
                     point.x = (centroids[t] % region_map.info.width)*region_map.info.resolution + region_map.info.origin.position.x;
                     point.y = floor(centroids[t] / region_map.info.width)*region_map.info.resolution + region_map.info.origin.position.y;
 
-                    if((point.x == last_cent_x) || (point.y== last_cent_y))
+                    if((point.x == last_cent_x) || (point.y == last_cent_y) || (point.x == last_2cent_x) || (point.y == last_2cent_y))
                     {
                         std::cout << "Got the same centroid again, pass " << std::endl;
                     }
@@ -260,7 +259,7 @@ class FrontExpl
                 }
 
                 //Find spot to move to that is close
-                double smallest = 10.0;
+                double smallest = 9999999.0;
                 for(int u = 0; u < 10 ; u++)
                 {
                     std::cout << "Current distance value is " << dist_arr[u] << u << std::endl;
@@ -282,6 +281,8 @@ class FrontExpl
 
                 std::cout << "Centroid we gonna go is " << centroid_Xpts[move_to_pt] << " , " <<  centroid_Ypts[move_to_pt] << std::endl;
                 std::cout << "At a distance of " << smallest << std::endl;
+                last_2cent_x = last_cent_x;
+                last_2cent_y = last_cent_y;
                 last_cent_x = centroid_Xpts[move_to_pt];
                 last_cent_y = centroid_Ypts[move_to_pt];
 
@@ -298,17 +299,17 @@ class FrontExpl
                 ac.sendGoal(goal);
 
                 // Wait for the action to return
-                ac.waitForResult(ros::Duration(20));
+                ac.waitForResult(ros::Duration(60));
 
                 if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
                 {
                     ROS_INFO("You have reached the goal!");
                 }
-                else if (abs(robot_pose_.position.x - goal.target_pose.pose.position.x) < 0.5)
-                {
-                    std::cout << "Distance to goal is " << abs(robot_pose_.position.x - goal.target_pose.pose.position.x) << std::endl;
-                    ROS_INFO("You got very close to the goal!");
-                }
+                // else if (abs(robot_pose_.position.x - goal.target_pose.pose.position.x) < 0.5)
+                // {
+                //     std::cout << "Distance to goal is " << abs(robot_pose_.position.x - goal.target_pose.pose.position.x) << std::endl;
+                //     ROS_INFO("You got very close to the goal!");
+                // }
                 else
                 {
                     ROS_INFO("The base failed for some reason");
@@ -344,6 +345,8 @@ class FrontExpl
         int edge_after_i, edge_top_before_i, edge_top_i, edge_top_after_i;
         double last_cent_x = 0.0;
         double last_cent_y = 0.0;
+        double last_2cent_x = 0.0;
+        double last_2cent_y = 0.0;
 
 };
 
