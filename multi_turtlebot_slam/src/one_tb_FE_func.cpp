@@ -305,11 +305,6 @@ class FrontExpl
                 {
                     ROS_INFO("You have reached the goal!");
                 }
-                // else if (abs(robot_pose_.position.x - goal.target_pose.pose.position.x) < 0.5)
-                // {
-                //     std::cout << "Distance to goal is " << abs(robot_pose_.position.x - goal.target_pose.pose.position.x) << std::endl;
-                //     ROS_INFO("You got very close to the goal!");
-                // }
                 else
                 {
                     ROS_INFO("The base failed for some reason");
@@ -327,7 +322,6 @@ class FrontExpl
         nav_msgs::OccupancyGrid map_0_msg;
         nav_msgs::OccupancyGrid FE_tb3_0_map, region_map;
         tf2_ros::Buffer tfBuffer;
-        // tf2_ros::TransformListener tfListener(tfBuffer);
         geometry_msgs::Pose robot_pose_;
         std::string map_frame = "map";
         std::string body_frame = "base_footprint";
@@ -335,7 +329,6 @@ class FrontExpl
         int goal_c = 0;
         move_base_msgs::MoveBaseGoal goal_init;
         move_base_msgs::MoveBaseGoal goal;
-        // MoveBaseClient ac("move_base", true);
         geometry_msgs::Point point;
         int move_to_pt = 0;
         geometry_msgs::TransformStamped transformS;

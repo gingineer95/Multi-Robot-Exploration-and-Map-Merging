@@ -15,7 +15,6 @@ Panels:
         - /Local Map1/Planner1
         - /Goal1
         - /FE_edges_Map1/Status1
-        - /FE_Regions_Map1/Status1
       Splitter Ratio: 0.5
     Tree Height: 820
   - Class: rviz/Selection
@@ -307,7 +306,7 @@ Visualization Manager:
       Axes Length: 1
       Axes Radius: 0.10000000149011612
       Class: rviz/Pose
-      Color: 255; 25; 0
+      Color: 170; 170; 255
       Enabled: true
       Head Length: 0.30000001192092896
       Head Radius: 0.25
@@ -373,10 +372,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 110.77327728271484
+      Scale: 77.5284652709961
       Target Frame: <Fixed Frame>
-      X: -2.702641248703003
-      Y: 0.8987547755241394
+      X: -0.007580088451504707
+      Y: 0.499301940202713
     Saved: ~
 Window Geometry:
   Displays:
