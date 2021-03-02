@@ -88,7 +88,7 @@ class FrontExpl
             while (ros::ok())
             {
                 ros::spinOnce();
-                sleep(2.0);
+                // sleep(2.0);
 
                 FE_tb3_0_map.header.frame_id = "edges_map";
                 FE_tb3_0_map.info.resolution = map_0_msg.info.resolution;
@@ -191,7 +191,7 @@ class FrontExpl
                             region_map.data[all_edges[centroid]] = 125;
                             centroids[region_c] = temp_group[centroid];
                             region_c++;
-                            // std::cout << "Number of regions is now " << region_c << std::endl;
+                            std::cout << "Number of regions is now " << region_c << std::endl;
                         }
 
                         // Reset group array and counter
@@ -260,10 +260,10 @@ class FrontExpl
 
                 //Find spot to move to that is close
                 double smallest = 9999999.0;
-                for(int u = 0; u < 10 ; u++)
+                for(int u = 0; u < 20 ; u++)
                 {
                     std::cout << "Current distance value is " << dist_arr[u] << u << std::endl;
-                    if (dist_arr[u] < 0.25)
+                    if (dist_arr[u] < 0.01)
                     {
                         // continue;
                     }
@@ -309,7 +309,7 @@ class FrontExpl
                 {
                     ROS_INFO("The base failed for some reason");
                 }
-                sleep(2.0);
+                // sleep(2.0);
                 loop_rate.sleep();
             }
         }

@@ -1,14 +1,16 @@
 <launch>
     <arg name = "model" default = "burger"/>
     <arg name="move_forward_only" default="false"/>
-    <param name="/use_sim_time" value="true"/>
+    <!-- <param name="/use_sim_time" value="true"/> -->
 
     <!-- Open the "house" in gazebo -->
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" pass_all_args = "true">
-    </include> 
+    <!-- <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" pass_all_args = "true">
+    </include>  -->
+    <node name="Explorer" pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_func" output="screen"/> 
+
 
     <!-- Use slam_toolbox's localization method -->
-    <include file="$(find slam_toolbox)/online_sync.launch"/>
+    <include file="$(find slam_toolbox)/online_async.launch"/>
 
     <!-- Turtlebot3 bringup, with description and robot_state_pub -->
     <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
@@ -28,6 +30,5 @@
     <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="fuck_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /region_map /map"/> -->
     <node pkg="tf2_ros" type="static_transform_publisher" name="fucking_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /map /region_map"/>
     <node pkg="tf2_ros" type="static_transform_publisher" name="ugh_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /edges_map /map"/>
-    <node pkg="tf2_ros" type="static_transform_publisher" name="scan_bs"  args="0 0 0 0 0 0 /base_scan /scan"/>
 
 </launch>
