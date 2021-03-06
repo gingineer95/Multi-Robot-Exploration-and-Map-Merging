@@ -9,7 +9,7 @@
     <node name="Explorer" pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_func" output="screen"/> 
 
 
-    <!-- Use slam_toolbox's localization method -->
+    <!-- Use slam_toolbox's mapping.localization method -->
     <include file="$(find slam_toolbox)/online_async.launch"/>
 
     <!-- Turtlebot3 bringup, with description and robot_state_pub -->

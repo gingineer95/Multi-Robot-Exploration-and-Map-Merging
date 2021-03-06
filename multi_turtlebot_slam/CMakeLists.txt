@@ -142,7 +142,8 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/init_pose.cpp)
 add_executable(${PROJECT_NAME}_map_node src/map_metadata.cpp)
-add_executable(${PROJECT_NAME}_front_expl src/frontier_nav.cpp)
+# add_executable(${PROJECT_NAME}_front_expl src/frontier_nav.cpp)
+add_executable(${PROJECT_NAME}_front_expl src/explore_frontiers.cpp)
 add_executable(${PROJECT_NAME}_improved src/one_tb_FE_improved.cpp)
 add_executable(${PROJECT_NAME}_one_tb src/tb3_0_FE.cpp)
 add_executable(${PROJECT_NAME}_other_tb src/tb3_1_FE.cpp)

@@ -10,14 +10,22 @@
         <arg name="ns"  value="$(arg first_tb3)"/>
     </include>
 
-    <include file = "$(find multi_turtlebot_slam)/launch/kailey_online_synch.launch">
+    <!-- <include file = "$(find multi_turtlebot_slam)/launch/kailey_online_synch.launch">
         <arg name="ns"  value="$(arg second_tb3)"/>
-    </include>
+    </include> -->
 
     <!-- Open move_base for each ns -->
-    <group ns = "$(arg first_tb3)">
+    <!-- <group ns = "$(arg first_tb3)">
         <include file="$(find multi_turtlebot_slam)/launch/kailey_move_base.launch">
             <arg name="ns"  value="$(arg first_tb3)"/>
+        </include>
+    </group> -->
+
+        <!-- start the move_base, all the costmaps, cmd_vel and odom and DWA planner -->
+    <group ns = "$(arg first_tb3)">    
+        <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
+            <arg name="model" value="burger" />
+            <!-- <arg name="move_forward_only" value="$(arg move_forward_only)"/> -->
         </include>
     </group>
 

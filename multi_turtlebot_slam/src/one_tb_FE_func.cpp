@@ -119,6 +119,7 @@ class FrontExpl
                 {
                     if (FE_tb3_0_map.data[x] == -1)
                     {
+                        // std::cout << "Am I fucking getting this? " << map_0_msg.data[x] << std::endl;
                         neighborhood(x);
                         int f_edge[] = {below_before, below, below_after, before, after, top_before, top, top_after};
                         int f_edge_index[] = {below_before_i, below_i, below_after_i, before_i, after_i, top_before_i, top_i, top_after_i};
@@ -128,6 +129,7 @@ class FrontExpl
                         {
                             if (f_edge[i] == 0)
                             {
+                                std::cout << "Am I fucking getting this? " << f_edge[i] << std::endl;
                                 // If were actually at an edge, mark it
                                 int mark_edge = f_edge_index[i];
                                 FE_tb3_0_map.data[mark_edge] = 10;

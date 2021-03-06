@@ -78,8 +78,9 @@
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_imu"  args="0 0 0 0 0 0 /$(arg second_tb3)/imu_link /$(arg second_tb3)/$(arg second_tb3)/imu_link 100"/>
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_map"  args="0 0 0 0 0 0 /$(arg second_tb3)/map /$(arg second_tb3)/$(arg second_tb3)/map 100"/>
 
-
-  <node pkg="tf" type="static_transform_publisher" name="fucking_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /served_map /map 100"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="edge_0_broadcaster_map"  args="0 0 0 0 0 0 /tb3_0/map /edges_map_0 "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="region_0_broadcaster_map"  args="0 0 0 0 0 0 /tb3_0/map /region_map_0"/>
+  <!-- <node pkg="tf" type="static_transform_publisher" name="fucking_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /served_map /map 100"/> -->
   <!-- <node pkg="tf" type="static_transform_publisher" name="fucking_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /map /served_map 100"/> -->
 
 

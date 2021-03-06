@@ -67,6 +67,7 @@
   <exec_depend>slam_toolbox</exec_depend>
   <exec_depend>gmapping</exec_depend>
   <exec_depend>tf</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
   <exec_depend>teleop_twist_keyboard</exec_depend>
   <exec_depend>multirobot_map_merge</exec_depend>
   <depend>roscpp</depend>
