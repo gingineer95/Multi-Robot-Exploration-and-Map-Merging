@@ -283,7 +283,8 @@ class FrontExpl
 
                 if((fabs(point.x - last_cent_x) < 0.1) && (fabs(point.y - last_cent_y) < 0.1))
                 {
-                    // std::cout << "Got the same centroid again, pass " << std::endl;
+                    std::cout << "GOT THE SAME CENTROID, PASS " << std::endl;
+                    centroids.pop_back();
                 }
                 else if((fabs(point.x - last_2cent_x) < 0.1) && (fabs(point.y - last_2cent_y) < 0.1))
                 {
