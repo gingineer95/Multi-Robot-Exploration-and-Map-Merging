@@ -45,18 +45,18 @@
 
   <group ns = "$(arg second_tb3)">
     <include file="$(find multi_turtlebot_slam)/launch/kailey_move_base.launch">
-    <arg name="ns"  value="$(arg first_tb3)"/>
+    <arg name="ns"  value="$(arg second_tb3)"/>
     </include>
   </group>
 
   <!-- Use two seperate controls for navigation -->
-  <group ns = "$(arg first_tb3)">
+  <!-- <group ns = "$(arg first_tb3)">
     <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
   </group>
 
   <group ns = "$(arg second_tb3)">
     <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name ="teleop_twist_keyboard"/>
-  </group>
+  </group> -->
 
   <!-- Add the following transform to resolve map and namespace mismatch -->
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_f"  args="0 0 0 0 0 0 /$(arg first_tb3)/base_footprint /$(arg first_tb3)/$(arg first_tb3)/base_footprint 100"/>

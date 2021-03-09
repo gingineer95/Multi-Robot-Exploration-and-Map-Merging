@@ -36,8 +36,8 @@
     <param name="discovery_rate" value="0.05"/>
     <param name="estimation_rate" value="0.1"/>
     <param name="estimation_confidence" value="1.0"/>
-    <!-- <remap from = "$(arg first_tb3)/map" to = "new_tb3_0_map"/>
-    <remap from = "$(arg second_tb3)/map" to = "new_tb3_1_map"/> -->
+    <remap from = "$(arg first_tb3)/map" to = "new_tb3_0_map"/>
+    <remap from = "$(arg second_tb3)/map" to = "new_tb3_1_map"/>
   </node>
 
   <node pkg="tf" type="static_transform_publisher" name="world_to_$(arg first_tb3)_tf_broadcaster"  args="0 0 0 0 0 0 /map /$(arg first_tb3)/map 100"/>

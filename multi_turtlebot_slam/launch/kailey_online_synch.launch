@@ -9,7 +9,7 @@
     <param name="map_frame"  value="$(arg ns)/map"/>
     <remap from="/map" to="$(arg ns)/map"/>
     <remap from="/scan" to="$(arg ns)/scan"/>
-    <remap from="/initialpose" to = "initialpose_$(arg ns)"/>
+    <remap from="/initialpose" to = "/initialpose_$(arg ns)"/>
 
   </node>
 
