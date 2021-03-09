@@ -12,7 +12,6 @@ Panels:
         - /Local Map1/Polygon1
         - /Local Map1/Costmap1
         - /Local Map1/Planner1
-        - /Goal1
         - /FE_edges_Map1
         - /FE_edges_Map1/Status1
       Splitter Ratio: 0.5
@@ -170,12 +169,12 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Map
       Topic: /map
       Unreliable: false
       Use Timestamp: false
-      Value: true
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -322,22 +321,30 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: FE_edges_Map
       Topic: /edges_map_0
       Unreliable: false
       Use Timestamp: false
-      Value: true
+      Value: false
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: false
+      Enabled: true
       Name: FE_Regions_Map
-      Topic: /region_map
+      Topic: /region_map_0
       Unreliable: false
       Use Timestamp: false
-      Value: false
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /markers
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -372,10 +379,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 77.5284652709961
+      Scale: 68.93179321289062
       Target Frame: <Fixed Frame>
-      X: -0.007580088451504707
-      Y: 0.499301940202713
+      X: -2.5414304733276367
+      Y: 0.8473602533340454
     Saved: ~
 Window Geometry:
   Displays:

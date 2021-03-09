@@ -25,9 +25,9 @@
     <!-- <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/> -->
     <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find multi_turtlebot_slam)/config/FE.rviz"/>
 
-    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="fuck_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /region_map /map"/> -->
-    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="fucking_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /map /region_map"/> -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="fuck_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /region_map_0 /map"/>
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="fucking_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /map /region_map_0"/> -->
     <node pkg="tf2_ros" type="static_transform_publisher" name="ugh_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /edges_map_0 /map"/>
-    <node pkg="tf2_ros" type="static_transform_publisher" name="scan_bs"  args="0 0 0 0 0 0 /base_scan /scan"/>
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="scan_bs"  args="0 0 0 0 0 0 /base_scan /scan"/> -->
 
 </launch>

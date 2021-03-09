@@ -20,11 +20,11 @@ class FrontExpl
         FrontExpl()
         {
             // Create the initpose publisher and subscriber
-            tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edges_map", 10);
-            region_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("region_map", 10);
-            map_0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("map", 10, &FrontExpl::mapCallback, this);
+            tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edges_map_0", 10);
+            region_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("region_map_0", 10);
+            map_0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("tb3_0/map", 10, &FrontExpl::mapCallback, this);
             tf2_ros::TransformListener tfListener(tfBuffer);
-            MoveBaseClient ac("move_base", true);
+            MoveBaseClient ac("tb3_0/move_base", true);
 
             std::cout << "Initialized all the things" << std::endl;
         }

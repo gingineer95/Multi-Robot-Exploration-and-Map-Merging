@@ -4,8 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /TF1
-        - /Map2
         - /tb3_0 Local Map1/Costmap1
         - /tb3_0 Local Map1/Polygon1
         - /tb3_0 Gocal Map1/Costmap1
@@ -61,88 +59,10 @@ Visualization Manager:
       Reference Frame: tb3_0/map
       Value: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        edges_map_0:
-          Value: true
-        map:
-          Value: true
-        new_tb3_0_map:
-          Value: true
-        new_tb3_1_map:
-          Value: true
-        region_map_0:
-          Value: true
-        tb3_0/base_footprint:
-          Value: true
-        tb3_0/base_link:
-          Value: true
-        tb3_0/base_scan:
-          Value: true
-        tb3_0/caster_back_link:
-          Value: true
-        tb3_0/imu_link:
-          Value: true
-        tb3_0/map:
-          Value: true
-        tb3_0/odom:
-          Value: true
-        tb3_0/tb3_0/base_footprint:
-          Value: true
-        tb3_0/tb3_0/base_link:
-          Value: true
-        tb3_0/tb3_0/base_scan:
-          Value: true
-        tb3_0/tb3_0/caster_back_link:
-          Value: true
-        tb3_0/tb3_0/imu_link:
-          Value: true
-        tb3_0/tb3_0/map:
-          Value: true
-        tb3_0/tb3_0/wheel_left_link:
-          Value: true
-        tb3_0/tb3_0/wheel_right_link:
-          Value: true
-        tb3_0/wheel_left_link:
-          Value: true
-        tb3_0/wheel_right_link:
-          Value: true
-        tb3_1/base_footprint:
-          Value: true
-        tb3_1/base_link:
-          Value: true
-        tb3_1/base_scan:
-          Value: true
-        tb3_1/caster_back_link:
-          Value: true
-        tb3_1/imu_link:
-          Value: true
-        tb3_1/map:
-          Value: true
-        tb3_1/odom:
-          Value: true
-        tb3_1/tb3_1/base_footprint:
-          Value: true
-        tb3_1/tb3_1/base_link:
-          Value: true
-        tb3_1/tb3_1/base_scan:
-          Value: true
-        tb3_1/tb3_1/caster_back_link:
-          Value: true
-        tb3_1/tb3_1/imu_link:
-          Value: true
-        tb3_1/tb3_1/map:
-          Value: true
-        tb3_1/tb3_1/wheel_left_link:
-          Value: true
-        tb3_1/tb3_1/wheel_right_link:
-          Value: true
-        tb3_1/wheel_left_link:
-          Value: true
-        tb3_1/wheel_right_link:
-          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -150,67 +70,9 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          new_tb3_0_map:
-            {}
-          new_tb3_1_map:
-            {}
-          tb3_1/map:
-            tb3_1/odom:
-              tb3_1/base_footprint:
-                tb3_1/base_link:
-                  tb3_1/base_scan:
-                    tb3_1/tb3_1/base_scan:
-                      {}
-                  tb3_1/caster_back_link:
-                    tb3_1/tb3_1/caster_back_link:
-                      {}
-                  tb3_1/imu_link:
-                    tb3_1/tb3_1/imu_link:
-                      {}
-                  tb3_1/tb3_1/base_link:
-                    {}
-                  tb3_1/wheel_left_link:
-                    tb3_1/tb3_1/wheel_left_link:
-                      {}
-                  tb3_1/wheel_right_link:
-                    tb3_1/tb3_1/wheel_right_link:
-                      {}
-                tb3_1/tb3_1/base_footprint:
-                  {}
-            tb3_1/tb3_1/map:
-              {}
-        tb3_0/map:
-          edges_map_0:
-            {}
-          region_map_0:
-            {}
-          tb3_0/odom:
-            tb3_0/base_footprint:
-              tb3_0/base_link:
-                tb3_0/base_scan:
-                  tb3_0/tb3_0/base_scan:
-                    {}
-                tb3_0/caster_back_link:
-                  tb3_0/tb3_0/caster_back_link:
-                    {}
-                tb3_0/imu_link:
-                  tb3_0/tb3_0/imu_link:
-                    {}
-                tb3_0/tb3_0/base_link:
-                  {}
-                tb3_0/wheel_left_link:
-                  tb3_0/tb3_0/wheel_left_link:
-                    {}
-                tb3_0/wheel_right_link:
-                  tb3_0/tb3_0/wheel_right_link:
-                    {}
-              tb3_0/tb3_0/base_footprint:
-                {}
-          tb3_0/tb3_0/map:
-            {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -385,7 +247,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Map
-      Topic: /region_map_0
+      Topic: /tb3_1/map
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -393,12 +255,12 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: false
+      Enabled: true
       Name: Map
       Topic: /map
       Unreliable: false
       Use Timestamp: false
-      Value: false
+      Value: true
     - Class: rviz/Group
       Displays:
         - Alpha: 0.699999988079071

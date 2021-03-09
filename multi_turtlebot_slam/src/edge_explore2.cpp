@@ -21,8 +21,8 @@ class FrontExpl
     public:
         FrontExpl()
         {
-            tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edges_map_0", 1);
-            region_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("region_map_0", 1);
+            tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edges_map_0", 10);
+            region_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("region_map_0", 10);
             map_0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("map", 10, &FrontExpl::mapCallback, this);
             marker_pub = nh.advertise<visualization_msgs::MarkerArray>("markers", 1, true);
             tf2_ros::TransformListener tfListener(tfBuffer);
@@ -100,113 +100,112 @@ class FrontExpl
 
         }
 
-        bool check_edges(int curr_cell, int next_cell)
-        {
-            if (curr_cell == next_cell)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+        // bool check_edges(int curr_cell, int next_cell)
+        // {
+        //     if (curr_cell == next_cell)
+        //     {
+        //         return false;
+        //     }
+        //     else
+        //     {
+        //         return true;
+        //     }
+        // }
 
-        void find_regions()
-        {
-            std::vector<unsigned int> temp_group;
+        // void find_regions()
+        // {
+        //     std::vector<unsigned int> temp_group;
 
-            for (int q = 0; q < num_edges; q++)
-            {
-                unique_flag = check_edges(edge_vec[q], edge_vec[q+1]);
+        //     for (int q = 0; q < num_edges; q++)
+        //     {
+        //         unique_flag = check_edges(edge_vec[q], edge_vec[q+1]);
 
-                if (unique_flag == true)
-                {
-                    // std::cout << "Finding regions around cell " << edge_vec[q] << std::endl;
-                    // std::cout << "Evaluating against " << edge_vec[q+1] << std::endl;
+        //         if (unique_flag == true)
+        //         {
+        //             // std::cout << "Finding regions around cell " << edge_vec[q] << std::endl;
+        //             // std::cout << "Evaluating against " << edge_vec[q+1] << std::endl;
 
-                    neighborhood(edge_vec[q]);
+        //             neighborhood(edge_vec[q]);
 
-                    for(int i = 0; i < neighbor_index.size(); i++)
-                    {
-                        // std::cout << "Neighbor index is " << neighbor_index[i] << std::endl;
+        //             for(int i = 0; i < neighbor_index.size(); i++)
+        //             {
+        //                 // std::cout << "Neighbor index is " << neighbor_index[i] << std::endl;
 
-                        if (neighbor_index[i] == edge_vec[q+1])
-                        {
-                            edge_index = edge_vec[q]; 
-                            // next_edge_index = edge_vec[q+1];
-                            region_map.data[edge_index] = 110 + (20*region_c);
-                            region_map.data[next_edge_index] = 110 + (20*region_c);
-                            temp_group.push_back(edge_vec[q]);
-                            // temp_group.push_back(edge_vec[q+1]); // Just added this, maybe I should get rid of it
+        //                 if (neighbor_index[i] == edge_vec[q+1])
+        //                 {
+        //                     edge_index = edge_vec[q]; 
+        //                     next_edge_index = edge_vec[q+1];
+        //                     region_map.data[edge_index] = 110 + (20*region_c);
+        //                     region_map.data[next_edge_index] = 110 + (20*region_c);
+        //                     temp_group.push_back(edge_vec[q]);
 
-                            // std::cout << "Adding this value to temp group " << temp_group[group_c] << std::endl;
+        //                     std::cout << "Adding this value to temp group " << temp_group[group_c] << std::endl;
 
-                            sort( temp_group.begin(), temp_group.end() );
-                            temp_group .erase( unique( temp_group.begin(), temp_group.end() ), temp_group.end() );
+        //                     sort( temp_group.begin(), temp_group.end() );
+        //                     temp_group .erase( unique( temp_group.begin(), temp_group.end() ), temp_group.end() );
 
-                            group_c++;
-                        }
-                    }
+        //                     group_c++;
+        //                 }
+        //             }
 
-                    if (group_c == prev_group_c) // then we didnt add any edges to our region
-                    {
-                        if (group_c < 5) // frontier region too small
-                        {
-                        }
+        //             if (group_c == prev_group_c) // then we didnt add any edges to our region
+        //             {
+        //                 if (group_c < 7) // frontier region too small
+        //                 {
+        //                 }
                         
-                        else
-                        {
-                            // std::cout << "Size of group is " << group_c << std::endl;
+        //                 else
+        //                 {
+        //                     std::cout << "Size of group is " << group_c << std::endl;
 
-                            ///////////////////////////////////////
-                            // Write something that says if we move to close to wall, skip
-                            //////////////////////////////////////
+        //                     ///////////////////////////////////////
+        //                     // Write something that says if we move to close to wall, skip
+        //                     //////////////////////////////////////
 
-                            centroid = group_c / 2;
-                            // centroid_index = temp_group[centroid];
-                            // centroid = 0;
-                            centroid_index = temp_group[centroid];
+        //                     centroid = group_c / 2;
+        //                     // centroid_index = temp_group[centroid];
+        //                     // centroid = 0;
+        //                     centroid_index = temp_group[centroid];
 
-                            // std::cout << "Centroid is number " << centroid << " out of " << group_c << std::endl;
-                            // std::cout << "Centroid index is " << centroid_index << std::endl;
+        //                     // std::cout << "Centroid is number " << centroid << " out of " << group_c << std::endl;
+        //                     // std::cout << "Centroid index is " << centroid_index << std::endl;
 
-                            centroids.push_back(centroid_index);
-                            region_c++;
+        //                     centroids.push_back(centroid_index);
+        //                     region_c++;
 
-                            // std::cout << "Number of regions is now " << region_c << std::endl;
-                        }
+        //                     // std::cout << "Number of regions is now " << region_c << std::endl;
+        //                 }
 
-                        // std::cout << "Number of regions total is " << region_c-1 << std::endl;
-                        // std::cout << "And number of centorids is " << centroids.size() << std::endl;
+        //                 // std::cout << "Number of regions total is " << region_c-1 << std::endl;
+        //                 // std::cout << "And number of centorids is " << centroids.size() << std::endl;
 
-                        // Reset group array and counter
-                        group_c = 0;
-                        // std::vector<unsigned int> temp_group;
-                        // std::cout << "Value in current temp group are " << temp_group[0] << std::endl;
+        //                 // Reset group array and counter
+        //                 group_c = 0;
+        //                 // std::vector<unsigned int> temp_group;
+        //                 // std::cout << "Value in current temp group are " << temp_group[0] << std::endl;
 
-                        // for (int g = 0; g < temp_group.size(); g++)
-                        // {
-                        //     std::cout << temp_group[g] << std::endl;
-                        // } 
+        //                 // for (int g = 0; g < temp_group.size(); g++)
+        //                 // {
+        //                 //     std::cout << temp_group[g] << std::endl;
+        //                 // } 
 
-                        temp_group.clear();
-                        // std::cout << "Make sure we clear the temp_group " << temp_group[0] <<std::endl;
-                    }
-                    else
-                    {
-                        prev_group_c = group_c;
-                    }
-                }
+        //                 temp_group.clear();
+        //                 // std::cout << "Make sure we clear the temp_group " << temp_group[0] <<std::endl;
+        //             }
+        //             else
+        //             {
+        //                 prev_group_c = group_c;
+        //             }
+        //         }
 
-                else
-                {
-                    // std::cout << "Got a duplicate cell" << std::endl;
-                }
+        //         else
+        //         {
+        //             // std::cout << "Got a duplicate cell" << std::endl;
+        //         }
 
-            }
+        //     }
 
-        }
+        // }
 
         void find_transform()
         {
@@ -227,49 +226,46 @@ class FrontExpl
             robot_pose_.orientation.w = transformS.transform.rotation.w;
 
             std::cout << "Robot pose is  " << robot_pose_.position.x << " , " << robot_pose_.position.y << std::endl;
-
-            // robot_cent_x = robot_pose_.position.x;
-            // robot_cent_y = robot_pose_.position.y;
         }
 
-        void mark_centroids()
-        {
-            visualization_msgs::MarkerArray centroid_arr;
-            marker_pub.publish(centroid_arr);
+        // void mark_centroids()
+        // {
+        //     visualization_msgs::MarkerArray centroid_arr;
+        //     marker_pub.publish(centroid_arr);
 
-            centroid_arr.markers.resize(centroid_Xpts.size());
+        //     centroid_arr.markers.resize(centroid_Xpts.size());
 
-            for (int i = 0; i < centroid_Xpts.size(); i++) 
-            {
-                centroid_arr.markers[i].header.frame_id = "map";
-                centroid_arr.markers[i].header.stamp = ros::Time();
-                centroid_arr.markers[i].ns = "centroid";
-                centroid_arr.markers[i].id = i;
+        //     for (int i = 0; i < centroid_Xpts.size(); i++) 
+        //     {
+        //         centroid_arr.markers[i].header.frame_id = "map";
+        //         centroid_arr.markers[i].header.stamp = ros::Time();
+        //         centroid_arr.markers[i].ns = "centroid";
+        //         centroid_arr.markers[i].id = i;
 
-                centroid_arr.markers[i].type = visualization_msgs::Marker::CYLINDER;
-                centroid_arr.markers[i].action = visualization_msgs::Marker::ADD;
-                centroid_arr.markers[i].lifetime = ros::Duration(10);
+        //         centroid_arr.markers[i].type = visualization_msgs::Marker::CYLINDER;
+        //         centroid_arr.markers[i].action = visualization_msgs::Marker::ADD;
+        //         centroid_arr.markers[i].lifetime = ros::Duration(10);
 
-                centroid_arr.markers[i].pose.position.x = centroid_Xpts[i];
-                centroid_arr.markers[i].pose.position.y = centroid_Ypts[i];
-                centroid_arr.markers[i].pose.position.z = 0;
-                centroid_arr.markers[i].pose.orientation.x = 0.0;
-                centroid_arr.markers[i].pose.orientation.y = 0.0;
-                centroid_arr.markers[i].pose.orientation.z = 0.0;
-                centroid_arr.markers[i].pose.orientation.w = 1.0;
+        //         centroid_arr.markers[i].pose.position.x = centroid_Xpts[i];
+        //         centroid_arr.markers[i].pose.position.y = centroid_Ypts[i];
+        //         centroid_arr.markers[i].pose.position.z = 0;
+        //         centroid_arr.markers[i].pose.orientation.x = 0.0;
+        //         centroid_arr.markers[i].pose.orientation.y = 0.0;
+        //         centroid_arr.markers[i].pose.orientation.z = 0.0;
+        //         centroid_arr.markers[i].pose.orientation.w = 1.0;
 
-                centroid_arr.markers[i].scale.x = 0.1;
-                centroid_arr.markers[i].scale.y = 0.1;
-                centroid_arr.markers[i].scale.z = 0.1;
+        //         centroid_arr.markers[i].scale.x = 0.1;
+        //         centroid_arr.markers[i].scale.y = 0.1;
+        //         centroid_arr.markers[i].scale.z = 0.1;
 
-                centroid_arr.markers[i].color.a = 1.0;
-                centroid_arr.markers[i].color.r = 1.0;
-                centroid_arr.markers[i].color.g = 0.0;
-                centroid_arr.markers[i].color.b = 1.0;
-            }
+        //         centroid_arr.markers[i].color.a = 1.0;
+        //         centroid_arr.markers[i].color.r = 1.0;
+        //         centroid_arr.markers[i].color.g = 0.0;
+        //         centroid_arr.markers[i].color.b = 1.0;
+        //     }
 
-            marker_pub.publish(centroid_arr);
-        }
+        //     marker_pub.publish(centroid_arr);
+        // }
 
         void centroid_index_to_point()
         {
@@ -278,27 +274,16 @@ class FrontExpl
                 point.x = (centroids[t] % region_map.info.width)*region_map.info.resolution + region_map.info.origin.position.x;
                 point.y = floor(centroids[t] / region_map.info.width)*region_map.info.resolution + region_map.info.origin.position.y;
 
-                std::cout << "Diff with last centroid " << fabs(point.x - last_cent_x) << " , " << fabs(point.y - last_cent_y) << std::endl;
-                std::cout << "Diff with 2nd last centroid " << fabs(point.x - last_2cent_x) << " , " << fabs(point.y - last_2cent_y) << std::endl;
-
-                if((fabs(point.x - last_cent_x) < 0.1) && (fabs(point.y - last_cent_y) < 0.1))
+                if((fabs(point.x - last_cent_x) < 0.1) || (fabs(point.y - last_cent_y) < 0.1))
                 {
                     // std::cout << "Got the same centroid again, pass " << std::endl;
                 }
-                else if((fabs(point.x - last_2cent_x) < 0.1) && (fabs(point.y - last_2cent_y) < 0.1))
+                else if((fabs(point.x - last_2cent_x) < 0.1) || (fabs(point.y - last_2cent_y) < 0.1))
                 {
                     // std::cout << "Got the same centroid again, pass " << std::endl;
-                }
-                else if((fabs(point.x) < 0.1) && (fabs(point.y) < 0.1))
-                {
-                    // std::cout << "Too close to the origin, why? " << std::endl;
                 }
                 // But why are we getting the map origin as a centroid...?
-                // else if((fabs(point.x - robot_cent_x) < 0.25) || (fabs(point.y - robot_cent_y) < 0.25))
-                // {
-                //     // std::cout << "Got the same centroid again, pass " << std::endl;
-                // }
-                else if((point.x < map_0_msg.info.origin.position.x + 0.05) && (point.y < map_0_msg.info.origin.position.y + 0.05))
+                else if((point.x < map_0_msg.info.origin.position.x + 0.05) || (point.y < map_0_msg.info.origin.position.y + 0.05))
                 {
                     // std::cout << "Why are we even near the map origin? " << std::endl;
                 }
@@ -307,14 +292,8 @@ class FrontExpl
                     // std::cout << "Centroid point is " << point.x << " , " << point.y << std::endl;
                     centroid_Xpts.push_back(point.x);
                     centroid_Ypts.push_back(point.y);
-
-                    mark_centroids();
-
-                    double delta_x = point.x - robot_pose_.position.x; 
-                    double delta_y = point.y - robot_pose_.position.y; 
-                    double sum = (pow(delta_x ,2)) + (pow(delta_y ,2));
-                    dist = pow( sum , 0.5 );
-
+                    // mark_centroids();
+                    dist = pow(((pow(point.x - robot_pose_.position.x,2)) + (pow(point.y - robot_pose_.position.y,2))) , 0.5);
                     // std::cout << "Distance is " << dist << std::endl;
                     dist_arr.push_back(dist);
                     centroid_c++;
@@ -328,22 +307,16 @@ class FrontExpl
             smallest = 9999999.0;
             for(int u = 0; u < region_c-1; u++)
             {
-                // std::cout << "Current distance value is " << dist_arr[u] << " at index " << u << std::endl;
-
-                if (dist_arr[u] < 0.1)
+                // std::cout << "Current distance value is " << dist_arr[u] << u << std::endl;
+                if (dist_arr[u] < 0.01)
                 {
-                    std::cout << "Index that is too small " << dist_arr[u] << std::endl;
                 }
                 else if (dist_arr[u] < smallest)
                 {
                     smallest = dist_arr[u];
-                    std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
+                    // std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
                     move_to_pt = u;
                     // std::cout << "Index we need to move to is ... (should be less than 10) " << move_to_pt << std::endl;
-                }
-                else
-                {
-                    std::cout << "This distance is bigger then 0.1 and the smallest value " << std::endl;
                 }
             }
         }
@@ -390,16 +363,6 @@ class FrontExpl
                         map_data.push_back(map_0_msg.data[q]);
                     }
 
-                    region_map.header.frame_id = "region_map_0";
-                    region_map.info.resolution = map_0_msg.info.resolution;
-                    region_map.info.width = map_0_msg.info.width;
-                    region_map.info.height = map_0_msg.info.height;
-                    region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-                    region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-                    region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-                    region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-                    region_map.data = map_0_msg.data;
-
                     // Store the map data in a vector so we can read that shit
                     int region_map_size = map_0_msg.data.size();
                     // region_map_data.resize(0);
@@ -412,7 +375,7 @@ class FrontExpl
                     // Start with inital number of edges is 1 and initalize vector to store edge index
                     num_edges = 0;
                     // edge_vec.resize(0);
-                    // edge_vec.clear();
+                    edge_vec.clear();
                     map_width = FE_tb3_0_map.info.width;
                     map_height = FE_tb3_0_map.info.height;
                     int region_map_width = region_map.info.width;
@@ -434,27 +397,22 @@ class FrontExpl
                     // NEED TO FIX HOW WERE CREATING FRONTIERS
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                    find_regions();
-                    region_map_pub.publish(region_map);
+                    // find_regions();
+                    // region_map_pub.publish(region_map);
 
                     find_transform();
 
                     centroid_index_to_point();
-                    // std::cout << "Number of centroids should match number of regions " << centroids.size() << " =? " << region_c << std::endl;
+                    // std::cout << "Number of centroids should match number of regions " << centroid_c << " =? " << region_c << std::endl;
 
                     find_closest_centroid();
 
                     std::cout << "Centroid we gonna go is " << centroid_Xpts[move_to_pt] << " , " <<  centroid_Ypts[move_to_pt] << std::endl;
                     std::cout << "At a distance of " << smallest << std::endl;
-
-                    std::cout << "Last centroid values " <<  last_cent_x << " , " << last_cent_y << std::endl;
-                    std::cout << "Last LAST centroid values " <<  last_2cent_x << " , " << last_2cent_y << std::endl;
-
                     last_2cent_x = last_cent_x;
                     last_2cent_y = last_cent_y;
                     last_cent_x = centroid_Xpts[move_to_pt];
                     last_cent_y = centroid_Ypts[move_to_pt];
-
                     // // STORE LAST CENTROID POINT AND SAY IF WE JUST WENT THERE, DONT GO AGAIN
 
                     // goal.target_pose.header.frame_id = "tb3_0/map"; // Needs to be AN ACTUAL FRAME
@@ -495,10 +453,11 @@ class FrontExpl
                 centroid_c = 0;
                 centroid = 0;
                 centroid_index = 0;
-                // point.x = 0.0;
-                // point.y = 0.0;
-
-                dist_arr.clear();
+                // edge_vec.resize(0);
+                // neighbor_index.resize(0);
+                // neighbor_value.resize(0);
+                // centroid_Xpts.resize(0);
+                // centroid_Ypts.resize(0);
                 edge_vec.clear();
                 neighbor_index.clear();
                 neighbor_value.clear();
@@ -549,8 +508,6 @@ class FrontExpl
         double last_cent_y = 0.0;
         double last_2cent_x = 0.0;
         double last_2cent_y = 0.0;
-        double robot_cent_x = -3.0;
-        double robot_cent_y = 1.0;
         bool unique_flag = true;
 
 
