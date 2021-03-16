@@ -23,7 +23,7 @@ class FrontExpl
         {
             tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edges_map_0", 1);
             region_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("region_map_0", 1);
-            map_0_sub = nh.subscribe("map", 10, &FrontExpl::mapCallback, this);
+            map_0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("map", 10, &FrontExpl::mapCallback, this);
             marker_pub = nh.advertise<visualization_msgs::MarkerArray>("markers", 1, true);
             tf2_ros::TransformListener tfListener(tfBuffer);
             MoveBaseClient ac("move_base", true);
@@ -34,40 +34,11 @@ class FrontExpl
         /// / \brief Grabs the position of the robot from the pose subscriber and stores it
         /// / \param msg - pose message
         /// \returns nothing
-        void mapCallback(const nav_msgs::OccupancyGrid & msg)
+        void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr & msg)
         {
-            // map_0_msg.header = msg->header;
-            // map_0_msg.info = msg->info;
-            // map_0_msg.data = msg->data;
-
-            map_0_msg = msg;
-
-            FE_tb3_0_map = msg;
-            region_map = msg;
-
-            FE_tb3_0_map.header.frame_id = "edges_map_0";
-            region_map.header.frame_id = "region_map_0";
-
-            // // Map definitions for the edges and region maps
-            // FE_tb3_0_map.header.frame_id = "edges_map_0";
-            // FE_tb3_0_map.info.resolution = map_0_msg.info.resolution;
-            // FE_tb3_0_map.info.width = map_0_msg.info.width;
-            // FE_tb3_0_map.info.height = map_0_msg.info.height;
-            // FE_tb3_0_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-            // FE_tb3_0_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-            // FE_tb3_0_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-            // FE_tb3_0_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-            // FE_tb3_0_map.data = map_0_msg.data;
-
-            // region_map.header.frame_id = "region_map_0";
-            // region_map.info.resolution = map_0_msg.info.resolution;
-            // region_map.info.width = map_0_msg.info.width;
-            // region_map.info.height = map_0_msg.info.height;
-            // region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-            // region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-            // region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-            // region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-            // region_map.data = map_0_msg.data;
+            map_0_msg.header = msg->header;
+            map_0_msg.info = msg->info;
+            map_0_msg.data = msg->data;
 
             std::cout << "Got to map callback" << std::endl;
         }
@@ -102,7 +73,7 @@ class FrontExpl
                 {
                     if (map_data[x] == -1)
                     {
-                        // If there is an unknown cell then check neighboring cells find potential frontier edge (free cell)
+                        // If there is an unknown cell then check neighboring cells to find potential frontier edge (free cell)
                         neighborhood(x);
 
                         sort( neighbor_index.begin(), neighbor_index.end() );
@@ -164,11 +135,8 @@ class FrontExpl
                         {
                             edge_index = edge_vec[q]; 
                             // next_edge_index = edge_vec[q+1];
-
-                            // Do we need to publish the region map?
-                            // region_map.data[edge_index] = 110 + (20*region_c);
-                            // region_map.data[next_edge_index] = 110 + (20*region_c);
-
+                            region_map.data[edge_index] = 110 + (20*region_c);
+                            region_map.data[next_edge_index] = 110 + (20*region_c);
                             temp_group.push_back(edge_vec[q]);
                             // temp_group.push_back(edge_vec[q+1]); // Just added this, maybe I should get rid of it
 
@@ -376,15 +344,13 @@ class FrontExpl
                 }
                 else
                 {
-                    // std::cout << "This distance is bigger then 0.1 and the smallest value " << std::endl;
+                    std::cout << "This distance is bigger then 0.1 and the smallest value " << std::endl;
                 }
             }
         }
 
         void main_loop()
         {
-            std::cout << "Entered the main loop" << std::endl;
-
             typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
             MoveBaseClient ac("move_base", true);
 
@@ -400,22 +366,18 @@ class FrontExpl
 
             while (ros::ok())
             {
-                std::cout << "While ros okay" << std::endl;
-                // ros::spinOnce();
-                // std::cout << "Spinning like a ballerina" << std::endl;
+                ros::spinOnce();
 
-                // // Map definitions for the edges and region maps
-                // FE_tb3_0_map.header.frame_id = "edges_map_0";
-                // FE_tb3_0_map.info.resolution = map_0_msg.info.resolution;
-                // FE_tb3_0_map.info.width = map_0_msg.info.width;
-                // FE_tb3_0_map.info.height = map_0_msg.info.height;
-                // FE_tb3_0_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-                // FE_tb3_0_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-                // FE_tb3_0_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-                // FE_tb3_0_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-                // FE_tb3_0_map.data = map_0_msg.data;
-
-                std::cout << "Do we have map data? " << map_0_msg.data.size() << std::endl;
+                // Map definitions for the edges and region maps
+                FE_tb3_0_map.header.frame_id = "edges_map_0";
+                FE_tb3_0_map.info.resolution = map_0_msg.info.resolution;
+                FE_tb3_0_map.info.width = map_0_msg.info.width;
+                FE_tb3_0_map.info.height = map_0_msg.info.height;
+                FE_tb3_0_map.info.origin.position.x = map_0_msg.info.origin.position.x;
+                FE_tb3_0_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
+                FE_tb3_0_map.info.origin.position.z = map_0_msg.info.origin.position.z;
+                FE_tb3_0_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
+                FE_tb3_0_map.data = map_0_msg.data;
 
                 if (map_0_msg.data.size()!=0)
                 {
@@ -424,40 +386,25 @@ class FrontExpl
                     int map_size = map_0_msg.data.size();
                     // map_data.resize(0);
                     map_data.clear();
-
                     for (int q = 0; q < map_size; q++)
                     {
                         map_data.push_back(map_0_msg.data[q]);
                     }
 
-                    // region_map.header.frame_id = "region_map_0";
-                    // region_map.info.resolution = map_0_msg.info.resolution;
-                    // region_map.info.width = map_0_msg.info.width;
-                    // region_map.info.height = map_0_msg.info.height;
-                    // region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-                    // region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-                    // region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-                    // region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-                    // region_map.data = map_0_msg.data;
+                    region_map.header.frame_id = "region_map_0";
+                    region_map.info.resolution = map_0_msg.info.resolution;
+                    region_map.info.width = map_0_msg.info.width;
+                    region_map.info.height = map_0_msg.info.height;
+                    region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
+                    region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
+                    region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
+                    region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
+                    region_map.data = map_0_msg.data;
 
-                    // region_map.header.frame_id = "region_map_0";
-                    // region_map.info.resolution = map_0_msg.info.resolution;
-                    // region_map.info.width = map_0_msg.info.width;
-                    // region_map.info.height = map_0_msg.info.height;
-                    // region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-                    // region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-                    // region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-                    // region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-                    // region_map.data = map_0_msg.data;
-
-                    std::cout << "Store the map data in a vector so we can read that shit" << std::endl;
                     // Store the map data in a vector so we can read that shit
                     int region_map_size = map_0_msg.data.size();
                     // region_map_data.resize(0);
                     region_map_data.clear();
-
-                    std::cout << "Gonna start doing map things" << std::endl;
-
                     for (int q = 0; q < region_map_size; q++)
                     {
                         region_map_data.push_back(map_0_msg.data[q]);
@@ -489,7 +436,7 @@ class FrontExpl
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     find_regions();
-                    // region_map_pub.publish(region_map);
+                    region_map_pub.publish(region_map);
 
                     find_transform();
 
@@ -498,8 +445,8 @@ class FrontExpl
 
                     find_closest_centroid();
 
-                    // std::cout << "Centroid we gonna go is " << centroid_Xpts[move_to_pt] << " , " <<  centroid_Ypts[move_to_pt] << std::endl;
-                    // std::cout << "At a distance of " << smallest << std::endl;
+                    std::cout << "Centroid we gonna go is " << centroid_Xpts[move_to_pt] << " , " <<  centroid_Ypts[move_to_pt] << std::endl;
+                    std::cout << "At a distance of " << smallest << std::endl;
 
                     std::cout << "Last centroid values " <<  last_cent_x << " , " << last_cent_y << std::endl;
                     std::cout << "Last LAST centroid values " <<  last_2cent_x << " , " << last_2cent_y << std::endl;
@@ -543,7 +490,6 @@ class FrontExpl
                 }
 
                 // Reset variables 
-                std::cout << "Reseting vairbales" << std::endl;
                 num_edges = 0;
                 // region_c = 0;
                 region_c = 1;
@@ -553,7 +499,6 @@ class FrontExpl
                 // point.x = 0.0;
                 // point.y = 0.0;
 
-                std::cout << "Clearing all arrays " << std::endl;
                 dist_arr.clear();
                 edge_vec.clear();
                 neighbor_index.clear();
@@ -562,15 +507,7 @@ class FrontExpl
                 centroid_Xpts.clear();
                 centroid_Ypts.clear();
 
-                std::cout << "Loop sleeping and then doing all this again" << std::endl;
-
-                ros::spinOnce();
-
-                std::cout << "Spinning like a ballerina" << std::endl;
-
                 loop_rate.sleep();
-
-                std::cout << "Asleep and done with main_loop" << std::endl;
             }
         }
 

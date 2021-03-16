@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(multi_turtlebot_slam)
+project(multi_robot_exploration)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -9,8 +9,11 @@ project(multi_turtlebot_slam)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS 
 actionlib
+message_generation
+message_runtime
 move_base_msgs
 roscpp
+std_msgs
 tf2
 tf2_ros
 )
@@ -56,11 +59,11 @@ tf2_ros
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  tb3_0_start.srv
+  tb3_1_start.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -70,10 +73,10 @@ tf2_ros
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -109,8 +112,11 @@ catkin_package(
 #  LIBRARIES multi_turtlebot_slam
   CATKIN_DEPENDS 
   actionlib
+  message_generation
+  message_runtime
   move_base_msgs
   roscpp
+  std_msgs
   tf2 
   tf2_ros
 #  DEPENDS system_lib
@@ -140,17 +146,13 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/init_pose.cpp)
 add_executable(${PROJECT_NAME}_map_node src/map_metadata.cpp)
-# add_executable(${PROJECT_NAME}_front_expl src/frontier_nav.cpp)
-add_executable(${PROJECT_NAME}_front_expl src/explore_frontiers2.cpp)
-# add_executable(${PROJECT_NAME}_edge_expl src/edge_explore2.cpp)
-add_executable(${PROJECT_NAME}_improved src/one_tb_FE_improved.cpp)
-# add_executable(${PROJECT_NAME}_one_tb src/tb3_0_FE.cpp)
-add_executable(${PROJECT_NAME}_one_tb src/tb3_0_FE_updated.cpp)
-# add_executable(${PROJECT_NAME}_other_tb src/tb3_1_FE.cpp)
-add_executable(${PROJECT_NAME}_other_tb src/tb3_1_FE_updated.cpp)
+# add_executable(${PROJECT_NAME}_front_expl src/explore_frontiers.cpp)
+# add_executable(${PROJECT_NAME}_improved src/one_tb_FE_improved.cpp)
 # add_executable(${PROJECT_NAME}_func src/one_tb_FE_func.cpp)
+
+add_executable(${PROJECT_NAME}_tb3_0_FE src/tb3_0_FE_updated.cpp)
+add_executable(${PROJECT_NAME}_tb3_1_FE src/tb3_1_FE_updated.cpp)
 
 # add_executable(turtle_tf2_listener src/turtle_tf2_listener.cpp)
 # target_link_libraries(${PROJECT_NAME}_front_expl
@@ -168,30 +170,24 @@ add_executable(${PROJECT_NAME}_other_tb src/tb3_1_FE_updated.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
 target_link_libraries(${PROJECT_NAME}_map_node
   ${catkin_LIBRARIES}
 )
-target_link_libraries(${PROJECT_NAME}_front_expl
-  ${catkin_LIBRARIES}
-)
-# target_link_libraries(${PROJECT_NAME}_edge_expl
+# target_link_libraries(${PROJECT_NAME}_front_expl
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(${PROJECT_NAME}_improved
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(${PROJECT_NAME}_one_tb
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(${PROJECT_NAME}_other_tb
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(${PROJECT_NAME}_improved
+#   ${catkin_LIBRARIES}
+# )
 # target_link_libraries(${PROJECT_NAME}_func
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(${PROJECT_NAME}_tb3_0_FE
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(${PROJECT_NAME}_tb3_1_FE
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -209,30 +205,24 @@ target_link_libraries(${PROJECT_NAME}_other_tb
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-# install(TARGETS ${PROJECT_NAME}_node
-#    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
 install(TARGETS ${PROJECT_NAME}_map_node
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-install(TARGETS ${PROJECT_NAME}_front_expl
-   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-# install(TARGETS ${PROJECT_NAME}_edge_expl
+# install(TARGETS ${PROJECT_NAME}_front_expl
 #    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS ${PROJECT_NAME}_improved
-   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-install(TARGETS ${PROJECT_NAME}_one_tb
-   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-install(TARGETS ${PROJECT_NAME}_other_tb
-   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# install(TARGETS ${PROJECT_NAME}_improved
+#    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 # install(TARGETS ${PROJECT_NAME}_func
 #    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
+install(TARGETS ${PROJECT_NAME}_tb3_0_FE
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(TARGETS ${PROJECT_NAME}_tb3_1_FE
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 
 ## Mark libraries for installation

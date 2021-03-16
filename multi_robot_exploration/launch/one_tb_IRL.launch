@@ -1,0 +1,34 @@
+<launch>
+    <arg name = "model" default = "burger"/>
+    <arg name="move_forward_only" default="false"/>
+    <!-- <param name="/use_sim_time" value="true"/> -->
+
+    <!-- Open the "house" in gazebo -->
+    <!-- <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" pass_all_args = "true">
+    </include>  -->
+    <node name="Explorer" pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_func" output="screen"/> 
+
+
+    <!-- Use slam_toolbox's mapping.localization method -->
+    <include file="$(find slam_toolbox)/online_async.launch"/>
+
+    <!-- Turtlebot3 bringup, with description and robot_state_pub -->
+    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+        <arg name="model" value="$(arg model)" />
+    </include>
+
+    <!-- start the move_base, all the costmaps, cmd_vel and odom and DWA planner -->
+    <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
+        <arg name="model" value="$(arg model)" />
+        <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+    </include>
+
+    <!-- Open rviz -->
+    <!-- <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/> -->
+    <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find multi_turtlebot_slam)/config/FE.rviz"/>
+
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="fuck_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /region_map /map"/> -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="fucking_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /map /region_map"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="ugh_map_tf_broadcaster_map"  args="0 0 0 0 0 0 /edges_map /map"/>
+
+</launch>

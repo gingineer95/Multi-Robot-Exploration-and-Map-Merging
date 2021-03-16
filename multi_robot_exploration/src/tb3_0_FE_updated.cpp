@@ -10,6 +10,8 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <visualization_msgs/MarkerArray.h>
+#include <std_srvs/Empty.h>
+#include <multi_robot_exploration/tb3_0_start.h>
 #include <vector>
 #include <iostream>
 #include <cmath> 
@@ -23,60 +25,44 @@ class FrontExpl
         {
             tb3_0_FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edges_map_0", 1);
             region_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("region_map_0", 1);
-            map_0_sub = nh.subscribe("map", 10, &FrontExpl::mapCallback, this);
-            marker_pub = nh.advertise<visualization_msgs::MarkerArray>("markers", 1, true);
+            map_0_sub = nh.subscribe<nav_msgs::OccupancyGrid>("tb3_0/map", 10, &FrontExpl::mapCallback, this);
+            marker_pub = nh.advertise<visualization_msgs::MarkerArray>("markers_0", 1, true);
             tf2_ros::TransformListener tfListener(tfBuffer);
-            MoveBaseClient ac("move_base", true);
+            MoveBaseClient ac("tb3_0/move_base", true);
+
+            // Create the start service 
+            start_srv = nh.advertiseService("tb3_0_start", &FrontExpl::startCallback, this);
 
             std::cout << "Initialized all the things" << std::endl;
+        }
+
+        /// \brief Starts the frontier exploration
+        /// \param req - service request
+        /// \param res - service response
+        /// \returns true when done
+        bool startCallback(multi_robot_exploration::tb3_0_start::Request &req, multi_robot_exploration::tb3_0_start::Response &res)
+        {
+            std::cout << "Got to start service" << std::endl;
+            start_flag = true;
+            return true;
         }
 
         /// / \brief Grabs the position of the robot from the pose subscriber and stores it
         /// / \param msg - pose message
         /// \returns nothing
-        void mapCallback(const nav_msgs::OccupancyGrid & msg)
+        void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr & msg)
         {
-            // map_0_msg.header = msg->header;
-            // map_0_msg.info = msg->info;
-            // map_0_msg.data = msg->data;
-
-            map_0_msg = msg;
-
-            FE_tb3_0_map = msg;
-            region_map = msg;
-
-            FE_tb3_0_map.header.frame_id = "edges_map_0";
-            region_map.header.frame_id = "region_map_0";
-
-            // // Map definitions for the edges and region maps
-            // FE_tb3_0_map.header.frame_id = "edges_map_0";
-            // FE_tb3_0_map.info.resolution = map_0_msg.info.resolution;
-            // FE_tb3_0_map.info.width = map_0_msg.info.width;
-            // FE_tb3_0_map.info.height = map_0_msg.info.height;
-            // FE_tb3_0_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-            // FE_tb3_0_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-            // FE_tb3_0_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-            // FE_tb3_0_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-            // FE_tb3_0_map.data = map_0_msg.data;
-
-            // region_map.header.frame_id = "region_map_0";
-            // region_map.info.resolution = map_0_msg.info.resolution;
-            // region_map.info.width = map_0_msg.info.width;
-            // region_map.info.height = map_0_msg.info.height;
-            // region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-            // region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-            // region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-            // region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-            // region_map.data = map_0_msg.data;
+            map_0_msg.header = msg->header;
+            map_0_msg.info = msg->info;
+            map_0_msg.data = msg->data;
 
             std::cout << "Got to map callback" << std::endl;
         }
 
         void neighborhood(int cell)
         {
-            // std::vector<int> neighbor_index;
-            // neighbor_index.resize(0);
-            // neighbor_value.resize(0);
+            // std::cout << "Finding neighborhood values " << std::endl;
+
             neighbor_index.clear();
             neighbor_value.clear();
 
@@ -96,13 +82,14 @@ class FrontExpl
 
         void find_all_edges()
         {
+            std::cout << "Finding all frontier edges" << std::endl;
             // For all unknown points in the occupancy grid, find the value of the neighbors
             // Starting one row up and on space in so that we dont have an issues with the first point
                 for (double x = map_width + 1; x < (map_width * map_height) - map_width; x++)
                 {
                     if (map_data[x] == -1)
                     {
-                        // If there is an unknown cell then check neighboring cells find potential frontier edge (free cell)
+                        // If there is an unknown cell then check neighboring cells to find potential frontier edge (free cell)
                         neighborhood(x);
 
                         sort( neighbor_index.begin(), neighbor_index.end() );
@@ -131,6 +118,7 @@ class FrontExpl
 
         bool check_edges(int curr_cell, int next_cell)
         {
+            // std::cout << "Checking to make sure there arent any repeat edges" << std::endl;
             if (curr_cell == next_cell)
             {
                 return false;
@@ -143,7 +131,8 @@ class FrontExpl
 
         void find_regions()
         {
-            std::vector<unsigned int> temp_group;
+            std::cout << "Finding frontier regions " << std::endl;
+            // std::vector<unsigned int> temp_group;
 
             for (int q = 0; q < num_edges; q++)
             {
@@ -164,11 +153,8 @@ class FrontExpl
                         {
                             edge_index = edge_vec[q]; 
                             // next_edge_index = edge_vec[q+1];
-
-                            // Do we need to publish the region map?
-                            // region_map.data[edge_index] = 110 + (20*region_c);
-                            // region_map.data[next_edge_index] = 110 + (20*region_c);
-
+                            region_map.data[edge_index] = 110 + (20*region_c);
+                            region_map.data[next_edge_index] = 110 + (20*region_c);
                             temp_group.push_back(edge_vec[q]);
                             // temp_group.push_back(edge_vec[q+1]); // Just added this, maybe I should get rid of it
 
@@ -242,6 +228,7 @@ class FrontExpl
 
         void find_transform()
         {
+            std::cout << "Locating the robot's position..." << std::endl;
             // Find current location and move to the nearest centroid
             // Get robot pose
             transformS = tfBuffer.lookupTransform(map_frame, body_frame, ros::Time(0), ros::Duration(3.0));
@@ -266,6 +253,7 @@ class FrontExpl
 
         void mark_centroids()
         {
+            // std::cout << "Publishing markers" << std::endl;
             visualization_msgs::MarkerArray centroid_arr;
             marker_pub.publish(centroid_arr);
 
@@ -273,7 +261,7 @@ class FrontExpl
 
             for (int i = 0; i < centroid_Xpts.size(); i++) 
             {
-                centroid_arr.markers[i].header.frame_id = "map";
+                centroid_arr.markers[i].header.frame_id = "tb3/map";
                 centroid_arr.markers[i].header.stamp = ros::Time();
                 centroid_arr.markers[i].ns = "centroid";
                 centroid_arr.markers[i].id = i;
@@ -305,17 +293,18 @@ class FrontExpl
 
         void centroid_index_to_point()
         {
+            std::cout << "Calculating centroids" << std::endl;
             for (int t = 0; t < region_c-1; t++)
             {
                 point.x = (centroids[t] % region_map.info.width)*region_map.info.resolution + region_map.info.origin.position.x;
                 point.y = floor(centroids[t] / region_map.info.width)*region_map.info.resolution + region_map.info.origin.position.y;
 
-                std::cout << "Diff with last centroid " << fabs(point.x - last_cent_x) << " , " << fabs(point.y - last_cent_y) << std::endl;
-                std::cout << "Diff with 2nd last centroid " << fabs(point.x - last_2cent_x) << " , " << fabs(point.y - last_2cent_y) << std::endl;
+                // std::cout << "Diff with last centroid " << fabs(point.x - last_cent_x) << " , " << fabs(point.y - last_cent_y) << std::endl;
+                // std::cout << "Diff with 2nd last centroid " << fabs(point.x - last_2cent_x) << " , " << fabs(point.y - last_2cent_y) << std::endl;
 
                 if((fabs(point.x - last_cent_x) < 0.1) && (fabs(point.y - last_cent_y) < 0.1))
                 {
-                    std::cout << "GOT THE SAME CENTROID, PASS " << std::endl;
+                    // std::cout << "GOT THE SAME CENTROID, PASS " << std::endl;
                     centroids.pop_back();
                 }
                 else if((fabs(point.x - last_2cent_x) < 0.1) && (fabs(point.y - last_2cent_y) < 0.1))
@@ -350,13 +339,14 @@ class FrontExpl
 
                     // std::cout << "Distance is " << dist << std::endl;
                     dist_arr.push_back(dist);
-                    centroid_c++;
+                    // centroid_c++;
                 }
             }
         }
 
         void find_closest_centroid()
         {
+            std::cout << "Determining the closest centroid" << std::endl;
             // Find spot to move to that is close
             smallest = 9999999.0;
             for(int u = 0; u < region_c-1; u++)
@@ -365,12 +355,12 @@ class FrontExpl
 
                 if (dist_arr[u] < 0.1)
                 {
-                    std::cout << "Index that is too small " << dist_arr[u] << std::endl;
+                    // std::cout << "Index that is too small " << dist_arr[u] << std::endl;
                 }
                 else if (dist_arr[u] < smallest)
                 {
                     smallest = dist_arr[u];
-                    std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
+                    // std::cout << "Smallest DISTANCE value is " << smallest << std::endl;
                     move_to_pt = u;
                     // std::cout << "Index we need to move to is ... (should be less than 10) " << move_to_pt << std::endl;
                 }
@@ -383,10 +373,8 @@ class FrontExpl
 
         void main_loop()
         {
-            std::cout << "Entered the main loop" << std::endl;
-
-            typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
-            MoveBaseClient ac("move_base", true);
+            // typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
+            MoveBaseClient ac("tb3_0/move_base", true);
 
             //wait for the action server to come up
             while(!ac.waitForServer(ros::Duration(5.0)))
@@ -400,177 +388,149 @@ class FrontExpl
 
             while (ros::ok())
             {
-                std::cout << "While ros okay" << std::endl;
-                // ros::spinOnce();
-                // std::cout << "Spinning like a ballerina" << std::endl;
-
-                // // Map definitions for the edges and region maps
-                // FE_tb3_0_map.header.frame_id = "edges_map_0";
-                // FE_tb3_0_map.info.resolution = map_0_msg.info.resolution;
-                // FE_tb3_0_map.info.width = map_0_msg.info.width;
-                // FE_tb3_0_map.info.height = map_0_msg.info.height;
-                // FE_tb3_0_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-                // FE_tb3_0_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-                // FE_tb3_0_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-                // FE_tb3_0_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-                // FE_tb3_0_map.data = map_0_msg.data;
-
-                std::cout << "Do we have map data? " << map_0_msg.data.size() << std::endl;
-
-                if (map_0_msg.data.size()!=0)
-                {
-
-                    // Store the map data in a vector so we can read that shit
-                    int map_size = map_0_msg.data.size();
-                    // map_data.resize(0);
-                    map_data.clear();
-
-                    for (int q = 0; q < map_size; q++)
-                    {
-                        map_data.push_back(map_0_msg.data[q]);
-                    }
-
-                    // region_map.header.frame_id = "region_map_0";
-                    // region_map.info.resolution = map_0_msg.info.resolution;
-                    // region_map.info.width = map_0_msg.info.width;
-                    // region_map.info.height = map_0_msg.info.height;
-                    // region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-                    // region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-                    // region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-                    // region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-                    // region_map.data = map_0_msg.data;
-
-                    // region_map.header.frame_id = "region_map_0";
-                    // region_map.info.resolution = map_0_msg.info.resolution;
-                    // region_map.info.width = map_0_msg.info.width;
-                    // region_map.info.height = map_0_msg.info.height;
-                    // region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
-                    // region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
-                    // region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
-                    // region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
-                    // region_map.data = map_0_msg.data;
-
-                    std::cout << "Store the map data in a vector so we can read that shit" << std::endl;
-                    // Store the map data in a vector so we can read that shit
-                    int region_map_size = map_0_msg.data.size();
-                    // region_map_data.resize(0);
-                    region_map_data.clear();
-
-                    std::cout << "Gonna start doing map things" << std::endl;
-
-                    for (int q = 0; q < region_map_size; q++)
-                    {
-                        region_map_data.push_back(map_0_msg.data[q]);
-                    }
-
-                    // Start with inital number of edges is 1 and initalize vector to store edge index
-                    num_edges = 0;
-                    // edge_vec.resize(0);
-                    // edge_vec.clear();
-                    map_width = FE_tb3_0_map.info.width;
-                    map_height = FE_tb3_0_map.info.height;
-                    int region_map_width = region_map.info.width;
-                    int region_map_height = region_map.info.height;
-
-                    // std::cout << "Map width and height " << map_width << " , " << map_height << std::endl;
-                    // std::cout << "Region map width and height " << region_map_width << " , " << region_map_height << std::endl;
-
-                    find_all_edges();
-
-                    sort( edge_vec.begin(), edge_vec.end() );
-                    edge_vec.erase( unique( edge_vec.begin(), edge_vec.end() ), edge_vec.end() );
-
-                    tb3_0_FE_map_pub.publish(FE_tb3_0_map);
-                    // std::cout << "Number of edges is " << num_edges << " or " << edge_vec.size() << std::endl;
-
-                    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    // ALL GOOD AT GETTING EDGES
-                    // NEED TO FIX HOW WERE CREATING FRONTIERS
-                    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                    find_regions();
-                    // region_map_pub.publish(region_map);
-
-                    find_transform();
-
-                    centroid_index_to_point();
-                    // std::cout << "Number of centroids should match number of regions " << centroids.size() << " =? " << region_c << std::endl;
-
-                    find_closest_centroid();
-
-                    // std::cout << "Centroid we gonna go is " << centroid_Xpts[move_to_pt] << " , " <<  centroid_Ypts[move_to_pt] << std::endl;
-                    // std::cout << "At a distance of " << smallest << std::endl;
-
-                    std::cout << "Last centroid values " <<  last_cent_x << " , " << last_cent_y << std::endl;
-                    std::cout << "Last LAST centroid values " <<  last_2cent_x << " , " << last_2cent_y << std::endl;
-
-                    last_2cent_x = last_cent_x;
-                    last_2cent_y = last_cent_y;
-                    last_cent_x = centroid_Xpts[move_to_pt];
-                    last_cent_y = centroid_Ypts[move_to_pt];
-
-                    // // STORE LAST CENTROID POINT AND SAY IF WE JUST WENT THERE, DONT GO AGAIN
-
-                    // goal.target_pose.header.frame_id = "tb3_0/map"; // Needs to be AN ACTUAL FRAME
-                    goal.target_pose.header.frame_id = "map"; // Needs to be AN ACTUAL FRAME
-                    goal.target_pose.header.stamp = ros::Time();
-                    goal.target_pose.pose.position.x = centroid_Xpts[move_to_pt];
-                    goal.target_pose.pose.position.y = centroid_Ypts[move_to_pt];
-                    goal.target_pose.pose.orientation.w = 1.0;
-
-                    // std::cout << "Goal is " << goal.target_pose.pose.position.x << " , " <<  goal.target_pose.pose.position.y << std::endl;
-                    ROS_INFO("Sending goal");
-                    ac.sendGoal(goal);
-
-                    // Wait for the action to return
-                    ac.waitForResult(ros::Duration(60));
-
-                    if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-                    {
-                        ROS_INFO("You have reached the goal!");
-                    }
-                    else
-                    {
-                        ROS_INFO("The base failed for some reason");
-                    }
-
-                    std::cout << "" << std::endl;
-                }
-
-                else
-                {
-                    ROS_INFO("Waiting for first map");
-                }
-
-                // Reset variables 
-                std::cout << "Reseting vairbales" << std::endl;
-                num_edges = 0;
-                // region_c = 0;
-                region_c = 1;
-                centroid_c = 0;
-                centroid = 0;
-                centroid_index = 0;
-                // point.x = 0.0;
-                // point.y = 0.0;
-
-                std::cout << "Clearing all arrays " << std::endl;
-                dist_arr.clear();
-                edge_vec.clear();
-                neighbor_index.clear();
-                neighbor_value.clear();
-                centroids.clear();
-                centroid_Xpts.clear();
-                centroid_Ypts.clear();
-
-                std::cout << "Loop sleeping and then doing all this again" << std::endl;
-
                 ros::spinOnce();
 
-                std::cout << "Spinning like a ballerina" << std::endl;
+                if (start_flag == true)
+                {
+                    // Map definitions for the edges and region maps
+                    FE_tb3_0_map.header.frame_id = "edges_map_0";
+                    FE_tb3_0_map.info.resolution = map_0_msg.info.resolution;
+                    FE_tb3_0_map.info.width = map_0_msg.info.width;
+                    FE_tb3_0_map.info.height = map_0_msg.info.height;
+                    FE_tb3_0_map.info.origin.position.x = map_0_msg.info.origin.position.x;
+                    FE_tb3_0_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
+                    FE_tb3_0_map.info.origin.position.z = map_0_msg.info.origin.position.z;
+                    FE_tb3_0_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
+                    FE_tb3_0_map.data = map_0_msg.data;
+
+                    if (map_0_msg.data.size()!=0)
+                    {
+
+                        // Store the map data in a vector so we can read that shit
+                        int map_size = map_0_msg.data.size();
+                        // map_data.resize(0);
+                        map_data.clear();
+                        for (int q = 0; q < map_size; q++)
+                        {
+                            map_data.push_back(map_0_msg.data[q]);
+                        }
+
+                        region_map.header.frame_id = "region_map_0";
+                        region_map.info.resolution = map_0_msg.info.resolution;
+                        region_map.info.width = map_0_msg.info.width;
+                        region_map.info.height = map_0_msg.info.height;
+                        region_map.info.origin.position.x = map_0_msg.info.origin.position.x;
+                        region_map.info.origin.position.y = map_0_msg.info.origin.position.y ;
+                        region_map.info.origin.position.z = map_0_msg.info.origin.position.z;
+                        region_map.info.origin.orientation.w = map_0_msg.info.origin.orientation.w;
+                        region_map.data = map_0_msg.data;
+
+                        // Store the map data in a vector so we can read that shit
+                        int region_map_size = map_0_msg.data.size();
+                        // region_map_data.resize(0);
+                        region_map_data.clear();
+                        for (int q = 0; q < region_map_size; q++)
+                        {
+                            region_map_data.push_back(map_0_msg.data[q]);
+                        }
+
+                        // Start with inital number of edges is 1 and initalize vector to store edge index
+                        num_edges = 0;
+                        // edge_vec.resize(0);
+                        // edge_vec.clear();
+                        map_width = FE_tb3_0_map.info.width;
+                        map_height = FE_tb3_0_map.info.height;
+                        int region_map_width = region_map.info.width;
+                        int region_map_height = region_map.info.height;
+
+                        // std::cout << "Map width and height " << map_width << " , " << map_height << std::endl;
+                        // std::cout << "Region map width and height " << region_map_width << " , " << region_map_height << std::endl;
+
+                        find_all_edges();
+
+                        sort( edge_vec.begin(), edge_vec.end() );
+                        edge_vec.erase( unique( edge_vec.begin(), edge_vec.end() ), edge_vec.end() );
+
+                        tb3_0_FE_map_pub.publish(FE_tb3_0_map);
+                        // std::cout << "Number of edges is " << num_edges << " or " << edge_vec.size() << std::endl;
+
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        // ALL GOOD AT GETTING EDGES
+                        // NEED TO FIX HOW WERE CREATING FRONTIERS
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                        find_regions();
+                        region_map_pub.publish(region_map);
+
+                        find_transform();
+
+                        centroid_index_to_point();
+                        // std::cout << "Number of centroids should match number of regions " << centroids.size() << " =? " << region_c << std::endl;
+
+                        find_closest_centroid();
+
+                        std::cout << "Centroid we gonna go is " << centroid_Xpts[move_to_pt] << " , " <<  centroid_Ypts[move_to_pt] << std::endl;
+                        std::cout << "At a distance of " << smallest << std::endl;
+
+                        std::cout << "Last centroid values " <<  last_cent_x << " , " << last_cent_y << std::endl;
+                        std::cout << "Last LAST centroid values " <<  last_2cent_x << " , " << last_2cent_y << std::endl;
+
+                        last_2cent_x = last_cent_x;
+                        last_2cent_y = last_cent_y;
+                        last_cent_x = centroid_Xpts[move_to_pt];
+                        last_cent_y = centroid_Ypts[move_to_pt];
+
+                        // // STORE LAST CENTROID POINT AND SAY IF WE JUST WENT THERE, DONT GO AGAIN
+
+                        goal.target_pose.header.frame_id = "tb3_0/map"; // Needs to be AN ACTUAL FRAME
+                        // goal.target_pose.header.frame_id = "map"; // Needs to be AN ACTUAL FRAME
+                        goal.target_pose.header.stamp = ros::Time();
+                        goal.target_pose.pose.position.x = centroid_Xpts[move_to_pt];
+                        goal.target_pose.pose.position.y = centroid_Ypts[move_to_pt];
+                        goal.target_pose.pose.orientation.w = 1.0;
+
+                        // std::cout << "Goal is " << goal.target_pose.pose.position.x << " , " <<  goal.target_pose.pose.position.y << std::endl;
+                        ROS_INFO("Sending goal");
+                        ac.sendGoal(goal);
+
+                        // Wait for the action to return
+                        ac.waitForResult(ros::Duration(60));
+
+                        if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+                        {
+                            ROS_INFO("You have reached the goal!");
+                        }
+                        else
+                        {
+                            ROS_INFO("The base failed for some reason");
+                        }
+
+                        std::cout << "" << std::endl;
+                    }
+
+                    else
+                    {
+                        ROS_INFO("Waiting for first map");
+                    }
+
+                    // Reset variables 
+                    num_edges = 0;
+                    region_c = 1;
+                    centroid = 0;
+                    centroid_index = 0;
+                    // point.x = 0.0;
+                    // point.y = 0.0;
+
+                    dist_arr.clear();
+                    edge_vec.clear();
+                    neighbor_index.clear();
+                    neighbor_value.clear();
+                    centroids.clear();
+                    centroid_Xpts.clear();
+                    centroid_Ypts.clear();
+                }
 
                 loop_rate.sleep();
-
-                std::cout << "Asleep and done with main_loop" << std::endl;
             }
         }
 
@@ -578,51 +538,32 @@ class FrontExpl
         ros::NodeHandle nh;
         ros::Publisher tb3_0_FE_map_pub, region_map_pub, marker_pub;
         ros::Subscriber map_0_sub;
+        ros::ServiceServer start_srv;
         nav_msgs::OccupancyGrid map_0_msg;
         nav_msgs::OccupancyGrid FE_tb3_0_map, region_map;
-        // visualization_msgs::MarkerArray centroid_arr;
         tf2_ros::Buffer tfBuffer;
         geometry_msgs::Pose robot_pose_;
-        std::string map_frame = "map";
-        std::string body_frame = "base_footprint";
-        std::vector<signed int> edge_vec, neighbor_index, neighbor_value, map_data, region_map_data;
-        std::vector<unsigned int> centroids;
-        std::vector<double> centroid_Xpts, centroid_Ypts, dist_arr;
-        typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
-        int goal_c = 0;
-        int num_edges = 0;
-        int group_c = 0; // Counts the length of one group
-        int prev_group_c = 0;
-        int region_c = 1; // Counts the number of regions
-        int centroid_c = 0;
-        int centroid = 0;
-        int centroid_index = 0;
-        double smallest = 9999999.0;
+        geometry_msgs::Point point;
+        geometry_msgs::TransformStamped transformS;
         move_base_msgs::MoveBaseGoal goal_init;
         move_base_msgs::MoveBaseGoal goal;
-        geometry_msgs::Point point;
-        int move_to_pt = 0;
-        geometry_msgs::TransformStamped transformS;
-        // int below_before, below, below_after, before, after, top_before, top, top_after;
-        // int below_before_i, below_i, below_after_i, before_i, after_i, top_before_i, top_i, top_after_i;
-        int map_width, map_height, edge_size, mark_edge, edge_index, next_edge_index;
-        int edge_after, edge_top_before, edge_top, edge_top_after;
-        int edge_after_i, edge_top_before_i, edge_top_i, edge_top_after_i;
-        double dist;
-        double last_cent_x = 0.0;
-        double last_cent_y = 0.0;
-        double last_2cent_x = 0.0;
-        double last_2cent_y = 0.0;
-        double robot_cent_x = -3.0;
-        double robot_cent_y = 1.0;
+        std::string map_frame = "tb3_0/map";
+        std::string body_frame = "tb3_0/base_footprint";
+        typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
+        std::vector<signed int> edge_vec, neighbor_index, neighbor_value, map_data, region_map_data;
+        std::vector<unsigned int> centroids, temp_group;
+        std::vector<double> centroid_Xpts, centroid_Ypts, dist_arr;
+        int num_edges = 0, group_c = 0, prev_group_c = 0, region_c = 1, centroid = 0, centroid_index = 0, move_to_pt = 0;
+        int map_width = 0, map_height = 0, edge_size = 0, mark_edge = 0, edge_index = 0, next_edge_index = 0;
+        double dist = 0.0, last_cent_x = 0.0, last_cent_y = 0.0, last_2cent_x = 0.0, last_2cent_y = 0.0;
+        double robot_cent_x = -3.0, robot_cent_y = 1.0, smallest = 9999999.0;
         bool unique_flag = true;
-
-
+        bool start_flag = false;
 };
 
 int main(int argc, char * argv[])
 {
-    ros::init(argc, argv, "one_tb_FE_node");
+    ros::init(argc, argv, "tb3_0_FE_node");
     FrontExpl FE;
     FE.main_loop();
     ros::spin();
