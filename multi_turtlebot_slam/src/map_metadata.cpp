@@ -73,16 +73,20 @@ int main(int argc, char * argv[])
         new_tb3_1_map.info.origin.position.z = new_tb3_0_map.info.origin.position.z;
         new_tb3_1_map.info.origin.orientation.w = new_tb3_0_map.info.origin.orientation.w;
 
+        // Set the new map width and heights 
         const size_t width_ = 384;
         const size_t height_ = 384;
+        new_tb3_0_map.info.width = width_;
+        new_tb3_0_map.info.height = height_;
+        new_tb3_1_map.info.width = width_;
+        new_tb3_1_map.info.height = height_;
 
+        // Determine how much space to fill in with unknown cells bewteen bottom of the new sized map and the original slam map
         const size_t bottom0_width_ = (map0_msg.info.origin.position.x - new_tb3_0_map.info.origin.position.x) / new_tb3_0_map.info.resolution;
         const size_t bottom1_width_ = (map1_msg.info.origin.position.x - new_tb3_1_map.info.origin.position.x) / new_tb3_1_map.info.resolution;
 
-        new_tb3_0_map.info.width = width_;
-        new_tb3_0_map.info.height = height_;
-        new_tb3_1_map.info.width = new_tb3_0_map.info.width;
-        new_tb3_1_map.info.height = new_tb3_0_map.info.height;
+        const size_t bottom0_height_ = (map0_msg.info.origin.position.y - new_tb3_0_map.info.origin.position.y) / new_tb3_0_map.info.resolution;
+        const size_t bottom1_height_ = (map1_msg.info.origin.position.y - new_tb3_1_map.info.origin.position.y) / new_tb3_1_map.info.resolution;
 
         /////////////////////////////////////////////////////////////////////////////
         // For the frist turtlebot (tb3_0)
@@ -94,7 +98,7 @@ int main(int argc, char * argv[])
         int c0 = 0; // start a counter for map0
 
         // This fills in the right hand side of the new map to the slam map
-        for (int i=0;  i < new_tb3_0_map.info.width * 123; i++) // orginally 123
+        for (int i=0;  i < new_tb3_0_map.info.width * bottom0_height_; i++)
         {
           new_tb3_0_map.data.push_back(-1);
         }
@@ -121,7 +125,7 @@ int main(int argc, char * argv[])
         } 
 
         // Fill in the left hand side of the new map
-        for (int z=0;  z < ((height_ - slam0_map.info.height - 123) * new_tb3_0_map.info.width); z++)
+        for (int z=0;  z < ((height_ - slam0_map.info.height - bottom0_height_) * new_tb3_0_map.info.width); z++)
         {
           new_tb3_0_map.data.push_back(-1);
         }
@@ -136,7 +140,7 @@ int main(int argc, char * argv[])
         int c1 = 0; // start a counter for map 2
 
         // Fill in the empty space on the right hand side of the map
-        for (int i=0;  i < new_tb3_1_map.info.width * 113; i++)
+        for (int i=0;  i < new_tb3_1_map.info.width *  bottom1_height_; i++)
         {
           new_tb3_1_map.data.push_back(-1);
         }
@@ -165,7 +169,7 @@ int main(int argc, char * argv[])
         } 
 
         // Fill in the area on the left hand side of the map
-        for (int z=0;  z < ((height_ - slam1_map.info.height - 113) * new_tb3_1_map.info.width); z++)
+        for (int z=0;  z < ((height_ - slam1_map.info.height -  bottom1_height_) * new_tb3_1_map.info.width); z++)
         {
           new_tb3_1_map.data.push_back(-1);
         }
