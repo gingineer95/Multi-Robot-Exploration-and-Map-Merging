@@ -21,7 +21,6 @@ tf2_ros
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
@@ -146,22 +145,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_map_node src/map_metadata.cpp)
 add_executable(${PROJECT_NAME}_map_node src/map_expansion.cpp)
-# add_executable(${PROJECT_NAME}_front_expl src/explore_frontiers.cpp)
-# add_executable(${PROJECT_NAME}_improved src/one_tb_FE_improved.cpp)
-# add_executable(${PROJECT_NAME}_func src/one_tb_FE_func.cpp)
-
-# add_executable(${PROJECT_NAME}_tb3_0_FE src/tb3_0_FE_updated.cpp)
-# add_executable(${PROJECT_NAME}_tb3_1_FE src/tb3_1_FE_updated.cpp)
-
 add_executable(${PROJECT_NAME}_tb3_0_FE src/exploradora0.cpp)
 add_executable(${PROJECT_NAME}_tb3_1_FE src/exploradora1.cpp)
-
-# add_executable(turtle_tf2_listener src/turtle_tf2_listener.cpp)
-# target_link_libraries(${PROJECT_NAME}_front_expl
-#  ${catkin_LIBRARIES}
-# )
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -177,15 +163,6 @@ add_executable(${PROJECT_NAME}_tb3_1_FE src/exploradora1.cpp)
 target_link_libraries(${PROJECT_NAME}_map_node
   ${catkin_LIBRARIES}
 )
-# target_link_libraries(${PROJECT_NAME}_front_expl
-#   ${catkin_LIBRARIES}
-# )
-# target_link_libraries(${PROJECT_NAME}_improved
-#   ${catkin_LIBRARIES}
-# )
-# target_link_libraries(${PROJECT_NAME}_func
-#   ${catkin_LIBRARIES}
-# )
 target_link_libraries(${PROJECT_NAME}_tb3_0_FE
   ${catkin_LIBRARIES}
 )
@@ -212,15 +189,6 @@ target_link_libraries(${PROJECT_NAME}_tb3_1_FE
 install(TARGETS ${PROJECT_NAME}_map_node
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-# install(TARGETS ${PROJECT_NAME}_front_expl
-#    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-# install(TARGETS ${PROJECT_NAME}_improved
-#    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-# install(TARGETS ${PROJECT_NAME}_func
-#    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
 install(TARGETS ${PROJECT_NAME}_tb3_0_FE
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
