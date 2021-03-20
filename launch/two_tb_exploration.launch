@@ -14,7 +14,7 @@
   <arg name="second_tb3_y_pos" default=" -1.0"/>
 
   <!-- Add the map expansion node -->
-  <node pkg="multi_robot_exploration" type="multi_robot_exploration_map_node" name="multi_robot_exploration_map_node"/>
+  <node pkg="multi_robot_exploration" type="map_node" name="multi_robot_exploration_map_node"/>
 
   <!-- Open two tb in gazebo -->
   <include file="$(find multi_robot_exploration)/launch/spawn_robots.launch">
@@ -55,8 +55,8 @@
   </group>
 
   <!-- Open Frontier Exploration nodes -->
-  <node pkg="multi_robot_exploration" type="multi_robot_exploration_tb3_0_FE" name="multi_robot_exploration_tb3_0_FE"/>
-  <node pkg="multi_robot_exploration" type="multi_robot_exploration_tb3_1_FE" name="multi_robot_exploration_tb3_1_FE"/>
+  <node pkg="multi_robot_exploration" type="tb3_0_FE" name="tb3_0_FE"/>
+  <node pkg="multi_robot_exploration" type="tb3_1_FE" name="tb3_1_FE"/>
 
   <!-- Use two seperate controls for navigation -->
   <!-- <group ns = "$(arg first_tb3)">

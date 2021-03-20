@@ -5,7 +5,7 @@
     <arg name="init_pose"/> <!--init pos will change for each robot-->
 
     <!-- Load the specific robot decription for tb3_1 -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find multi_turtlebot_slam)/urdf/tb3_1.urdf.xacro" />
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find multi_robot_exploration)/urdf/tb3_1.urdf.xacro" />
 
     <!-- Start the robot state publisher -->
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher_1" output="screen">

@@ -12,7 +12,6 @@ Panels:
         - /Local Map1/Polygon1
         - /Local Map1/Costmap1
         - /Local Map1/Planner1
-        - /FE_edges_Map1
         - /FE_edges_Map1/Status1
       Splitter Ratio: 0.5
     Tree Height: 820
@@ -321,29 +320,11 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: false
+      Enabled: true
       Name: FE_edges_Map
-      Topic: /edges_map_0
+      Topic: /edges_map
       Unreliable: false
       Use Timestamp: false
-      Value: false
-    - Alpha: 0.699999988079071
-      Class: rviz/Map
-      Color Scheme: map
-      Draw Behind: false
-      Enabled: true
-      Name: FE_Regions_Map
-      Topic: /region_map_0
-      Unreliable: false
-      Use Timestamp: false
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /markers
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
