@@ -9,4 +9,8 @@ global_costmap:
   # static_map: false
   # rolling_window: true
   static_map: true
+
+# inflater_layer:
+#   inflation_radius: 0.55 #default of 0.55
+  # cost_scaling_factor: 2.5
  

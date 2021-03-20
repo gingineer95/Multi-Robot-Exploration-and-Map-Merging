@@ -2,8 +2,18 @@
   <!-- <param name="robot_description" -->
     <!-- command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot.urdf.xacro" /> -->
 
+    <arg name="first_tb3_x_pos" default="-7.0"/>
+    <arg name="first_tb3_y_pos" default=" -1.0"/>
+
+    <arg name="second_tb3_x_pos" default=" 7.0"/>
+    <arg name="second_tb3_y_pos" default=" -1.0"/>
+
+    <arg name="init_pose_0" default="-x $(arg first_tb3_x_pos) -y $(arg first_tb3_y_pos) -z 0.0" />
+    <arg name="init_pose_1" default="-x $(arg second_tb3_x_pos) -y $(arg second_tb3_y_pos) -z 0.0" />
+
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/>
+    <!-- <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/> -->
+    <arg name="world_name" value="$(find multi_robot_exploration)/worlds/bookstore.world"/>
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
@@ -12,21 +22,23 @@
   </include> 
 
   <!-- Was x = -7.0 y = -1.0-->
+  <!-- Also use x -4.5 -y 1.0 -z 0.0 -->
   <!-- BEGIN ROBOT 0 -->
   <group ns="tb3_0">
     <param name="tf_prefix" value="tb3_0" />
     <include file="$(find multi_turtlebot_slam)/launch/one_tb3_0.launch" >
-      <arg name="init_pose" value="-x -4.5 -y 1.0 -z 0.0" />
+      <arg name="init_pose" value="$(arg init_pose_0)"/>
       <arg name="robot_name"  value="Robot1" />
     </include>
   </group>
 
   <!-- Was x = 7.0 y = -1.0 -->
+  <!-- Also use -x 6.0 -y 1.0 -z 0.0 -->
   <!-- BEGIN ROBOT 1-->
   <group ns="tb3_1">
     <param name="tf_prefix" value="tb3_1" />
     <include file="$(find multi_turtlebot_slam)/launch/one_tb3_1.launch" >
-      <arg name="init_pose" value="-x 7.0 -y -1.0 -z 0.0" />
+      <arg name="init_pose" value="$(arg init_pose_1)"/>
       <arg name="robot_name"  value="Robot2" />
     </include>
   </group>

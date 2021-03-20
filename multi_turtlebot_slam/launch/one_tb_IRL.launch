@@ -6,8 +6,8 @@
     <!-- Open the "house" in gazebo -->
     <!-- <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" pass_all_args = "true">
     </include>  -->
-    <node name="Explorer" pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_func" output="screen"/> 
 
+    <node name="Explorer" pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_front_expl" output="screen"/> 
 
     <!-- Use slam_toolbox's mapping.localization method -->
     <include file="$(find slam_toolbox)/online_async.launch"/>

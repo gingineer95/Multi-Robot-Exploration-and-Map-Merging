@@ -3,6 +3,7 @@
   <!-- <arg name="cmd_vel_topic" default="$(arg ns)/cmd_vel" />
   <arg name="odom_topic" default="$(arg ns)/odom" /> -->
   <arg name = "robot_base_frame" default = "$(arg ns)/base_footprint"/>
+  <arg name="move_forward_only" default="false"/>
 
   <!-- Define your move_base node -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">

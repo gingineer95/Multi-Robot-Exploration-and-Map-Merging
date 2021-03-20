@@ -146,13 +146,17 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_map_node src/map_metadata.cpp)
+# add_executable(${PROJECT_NAME}_map_node src/map_metadata.cpp)
+add_executable(${PROJECT_NAME}_map_node src/map_expansion.cpp)
 # add_executable(${PROJECT_NAME}_front_expl src/explore_frontiers.cpp)
 # add_executable(${PROJECT_NAME}_improved src/one_tb_FE_improved.cpp)
 # add_executable(${PROJECT_NAME}_func src/one_tb_FE_func.cpp)
 
-add_executable(${PROJECT_NAME}_tb3_0_FE src/tb3_0_FE_updated.cpp)
-add_executable(${PROJECT_NAME}_tb3_1_FE src/tb3_1_FE_updated.cpp)
+# add_executable(${PROJECT_NAME}_tb3_0_FE src/tb3_0_FE_updated.cpp)
+# add_executable(${PROJECT_NAME}_tb3_1_FE src/tb3_1_FE_updated.cpp)
+
+add_executable(${PROJECT_NAME}_tb3_0_FE src/exploradora0.cpp)
+add_executable(${PROJECT_NAME}_tb3_1_FE src/exploradora1.cpp)
 
 # add_executable(turtle_tf2_listener src/turtle_tf2_listener.cpp)
 # target_link_libraries(${PROJECT_NAME}_front_expl

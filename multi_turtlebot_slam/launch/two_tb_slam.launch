@@ -5,13 +5,7 @@
   <arg name="open_rviz" default="true"/>
   <arg name="first_tb3"  default="tb3_0"/>
   <arg name="second_tb3" default="tb3_1"/>
-  <arg name="map_file" default="$(find multi_turtlebot_slam)/maps/map.yaml"/>
-
-    <!-- Map server -->
-  <!-- <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)">
-    <param name="frame_id" value ="served_map"/>
-    <remap from="map" to="served_map"/>
-  </node> -->
+  <!-- <arg name="map_file" default="$(find multi_turtlebot_slam)/maps/map.yaml"/> -->
 
   <!-- Add the map expansion node -->
   <node pkg="multi_turtlebot_slam" type="multi_turtlebot_slam_map_node" name="multi_turtlebot_slam_map_node" output="screen"/>
@@ -50,13 +44,13 @@
   </group> -->
 
   <!-- Use two seperate controls for navigation -->
-  <group ns = "$(arg first_tb3)">
+  <!-- <group ns = "$(arg first_tb3)">
     <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
   </group>
 
   <group ns = "$(arg second_tb3)">
     <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name ="teleop_twist_keyboard"/>
-  </group>
+  </group> -->
 
   <!-- Add the following transform to resolve map and namespace mismatch -->
   <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_f"  args="0 0 0 0 0 0 /$(arg first_tb3)/base_footprint /$(arg first_tb3)/$(arg first_tb3)/base_footprint 100"/>

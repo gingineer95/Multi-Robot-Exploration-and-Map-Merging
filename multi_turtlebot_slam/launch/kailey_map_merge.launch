@@ -31,7 +31,7 @@
     <param name="robot_namespace" value="tb3"/>
     <param name="merged_map_topic" value="map"/>
     <param name="world_frame" value="map"/>
-    <param name="known_init_poses" value="false"/>
+    <param name="known_init_poses" value="true"/>
     <param name="merging_rate" value="0.5"/>
     <param name="discovery_rate" value="0.05"/>
     <param name="estimation_rate" value="0.1"/>

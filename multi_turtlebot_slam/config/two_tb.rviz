@@ -237,7 +237,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Map
-      Topic: /tb3_0/map
+      Topic: /new_tb3_0_map
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -247,7 +247,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Map
-      Topic: /tb3_1/map
+      Topic: /new_tb3_1_map
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -484,7 +484,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -1.6099995374679565
+      Angle: -1.5699975490570068
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -494,10 +494,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 42.186492919921875
+      Scale: 43.77360534667969
       Target Frame: map
-      X: 0.16176652908325195
-      Y: -1.0763862133026123
+      X: 0.02379513718187809
+      Y: -0.1392071545124054
     Saved: ~
 Window Geometry:
   Displays:
