@@ -29,7 +29,7 @@
     <!-- Open rviz -->
     <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find multi_robot_exploration)/config/single_tb_FE.rviz"/>
 
-    <!-- Create a transform between the edges map and the original map -->
+    <!-- Create a transform between the frontier edges map and the original map -->
     <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_edges_map"  args="0 0 0 0 0 0 /edges_map /map"/>
 
 </launch>

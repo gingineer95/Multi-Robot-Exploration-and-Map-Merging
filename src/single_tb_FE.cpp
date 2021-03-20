@@ -1,5 +1,5 @@
 /// \file
-/// \brief With this node, a turtlebot will explore a given space using Froniter Exploration
+/// \brief With this node a turtlebot will explore a given space using Froniter Exploration
 
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
@@ -22,14 +22,11 @@ class FrontExpl
         {
             FE_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edges_map", 1);
             map_sub = nh.subscribe("map", 10, &FrontExpl::mapCallback, this);
-            tf2_ros::TransformListener tfListener(tfBuffer);
-            // MoveBaseClient ac("move_base", true);
-
-            std::cout << "Initialized all the things" << std::endl;
+            std::cout << "Initialized the publisher and subcriber" << std::endl;
         }
 
-        /// / \brief Reads the map data published from slam_toolbox
-        /// / \param msg - map message
+        /// \brief Reads the map data published from slam_toolbox
+        /// \param msg - map message
         /// \returns nothing
         void mapCallback(const nav_msgs::OccupancyGrid & msg)
         {
@@ -42,9 +39,12 @@ class FrontExpl
             std::cout << "Got to map callback" << std::endl;
         }
 
+        /// \brief Stores a vector of index values of the 8 cell neighborhood relative to the input cell
+        /// \param cell - map cell
+        /// \returns nothing
         void neighborhood(int cell)
         {
-            // Clear any previous values in the arrays
+            // Clear any previous values in the vectors
             neighbor_index.clear();
             neighbor_value.clear();
 
@@ -62,6 +62,8 @@ class FrontExpl
             neighbor_index.erase( unique( neighbor_index.begin(), neighbor_index.end() ), neighbor_index.end() );
         }
 
+        /// \brief Stores a vector of frontier edges
+        /// \returns nothing
         void find_all_edges()
         {
             std::cout << "Finding all the frontier edges" << std::endl;
@@ -90,6 +92,10 @@ class FrontExpl
             } 
         }
 
+        /// \brief Compares two cells to see if the are identical or unique
+        /// \param - curr_cell: The current cell being evaluated
+        /// \param - next_cell: The next cell to be evaluated
+        /// \returns true or false
         bool check_edges(int curr_cell, int next_cell) // Dont evaluate the same cell more than once
         {
             if (curr_cell == next_cell)
@@ -102,10 +108,11 @@ class FrontExpl
             }
         }
 
+        /// \brief Given the frontier edges, group the neighboring edges into regions
+        /// \returns nothing
         void find_regions()
         {
             std::cout << "Finding regions for tb3" << std::endl;
-
             
             for (int q = 0; q < edge_vec.size() - 1; q++)
             {
@@ -148,7 +155,7 @@ class FrontExpl
                             centroids.push_back(centroid_index);
                         }
 
-                        // Reset the region array and size counter
+                        // Reset the region vector and size counter
                         group_c = 0;
                         temp_group.clear();
                     }
@@ -167,6 +174,8 @@ class FrontExpl
             }
         }
 
+        /// \brief Finds the transform between the map frame and the robot's base_footprint frame
+        /// \returns nothing
         void find_transform()
         {
             // Find the robot's current pose via the transform from the map frame and the base_footprint
@@ -181,14 +190,11 @@ class FrontExpl
             robot_pose_.position.z = 0.0;
             robot_pose_.orientation = transformS.transform.rotation;
 
-            // robot_pose_.orientation.x = transformS.transform.rotation.x;
-            // robot_pose_.orientation.y = transformS.transform.rotation.y;
-            // robot_pose_.orientation.z = transformS.transform.rotation.z;
-            // robot_pose_.orientation.w = transformS.transform.rotation.w;
-
             std::cout << "Robot pose is  " << robot_pose_.position.x << " , " << robot_pose_.position.y << std::endl;
         }
 
+        /// \brief Given a centroid cell, convert the centroid to x-y coordinates in the map frame and determine its distance from the robot
+        /// \returns nothing
         void centroid_index_to_point()
         {
             for (int t = 0; t < centroids.size(); t++)
@@ -216,7 +222,7 @@ class FrontExpl
 
                 else
                 {
-                    // If the centroid is valid, add its x and y values to their respective arrays
+                    // If the centroid is valid, add its x and y values to their respective vectors
                     centroid_Xpts.push_back(point.x);
                     centroid_Ypts.push_back(point.y);
 
@@ -236,6 +242,8 @@ class FrontExpl
             }
         }
 
+        /// \brief Given all the centroid distance values, find the closest centroid to move to
+        /// \returns nothing
         void find_closest_centroid()
         {
             // Set the first smallest distance to be large
@@ -267,6 +275,8 @@ class FrontExpl
             }
         }
 
+        /// \brief Given the frontier edges, convert the cell to x-y coordinates in the map frame and determine its distance from the robot
+        /// \returns nothing
         void edge_index_to_point()
         {
             for (int t = 0; t < edge_vec.size(); t++)
@@ -290,6 +300,8 @@ class FrontExpl
             }
         }
 
+        /// \brief Calls all other functions to find frontier edges, regions and a goal to move to. Then uses the action server to move to that goal
+        /// \returns nothing
         void main_loop()
         {
             std::cout << "Entered the main loop" << std::endl;
@@ -405,11 +417,9 @@ class FrontExpl
                 sleep(1.0);
 
                 // Reset variables 
-                std::cout << "Resetting vairbales" << std::endl;
+                std::cout << "Resetting vairbales and clearing all vectors" << std::endl;
                 centroid = 0;
                 centroid_index = 0;
-
-                std::cout << "Clearing all arrays " << std::endl;
                 dist_arr.clear();
                 edge_vec.clear();
                 neighbor_index.clear();
@@ -433,30 +443,21 @@ class FrontExpl
         ros::Publisher FE_map_pub;
         ros::Subscriber map_sub;
         ros::ServiceServer start_srv;
-        nav_msgs::OccupancyGrid FE_map, region_map;
         tf2_ros::Buffer tfBuffer;
+        nav_msgs::OccupancyGrid FE_map, region_map;
         geometry_msgs::Pose robot_pose_;
+        geometry_msgs::Point point;
+        geometry_msgs::TransformStamped transformS;
+        move_base_msgs::MoveBaseGoal goal;
+        typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
         std::string map_frame = "map";
         std::string body_frame = "base_footprint";
-        std::vector<signed int> edge_vec, neighbor_index, neighbor_value, map_data, region_map_data;
+        std::vector<signed int> edge_vec, neighbor_index, neighbor_value;
         std::vector<unsigned int> centroids, temp_group;
         std::vector<double> centroid_Xpts, centroid_Ypts, dist_arr, prev_cent_x, prev_cent_y;
-        typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
-        int group_c = 0; // Counts the length of one group
-        int prev_group_c = 0;
-        int centroid = 0;
-        int centroid_index = 0;
-        double smallest_dist = 9999999.0;
-        move_base_msgs::MoveBaseGoal goal_init;
-        move_base_msgs::MoveBaseGoal goal;
-        geometry_msgs::Point point;
-        int move_to_pt = 0;
-        geometry_msgs::TransformStamped transformS;
-        int map_width, map_height, edge_size, mark_edge, edge_index, next_edge_index;
-        double dist= 0.0;
+        int group_c=0, prev_group_c=0, centroid=0, centroid_index=0, move_to_pt=0, map_width=0, map_height=0, mark_edge=0, edge_index=0;
+        double smallest_dist = 9999999.0, dist = 0.0;
         bool unique_flag = true;
-
-
 };
 
 int main(int argc, char * argv[])
