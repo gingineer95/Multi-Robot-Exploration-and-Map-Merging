@@ -1,17 +1,21 @@
 <launch>
+  <!-- Namespaces -->
   <arg name="first_tb3"  default="tb3_0"/>
   <arg name="second_tb3" default="tb3_1"/>
 
+  <!-- Initial position for the first turtlebot -->
   <arg name="first_tb3_x_pos" default="-7.0"/>
   <arg name="first_tb3_y_pos" default=" -1.0"/>
   <arg name="first_tb3_z_pos" default=" 0.0"/>
   <arg name="first_tb3_yaw"   default=" 0.0"/>
 
+  <!-- Initial position for the second turtlebot -->
   <arg name="second_tb3_x_pos" default=" 7.0"/>
   <arg name="second_tb3_y_pos" default=" -1.0"/>
   <arg name="second_tb3_z_pos" default=" 0.0"/>
   <arg name="second_tb3_yaw"   default=" 0.0"/>
 
+  <!-- Pass the first turtlebot's position tb3_0/map_merge  -->
   <group ns="$(arg first_tb3)/map_merge">
     <param name="init_pose_x"   value="$(arg first_tb3_x_pos)"/>
     <param name="init_pose_y"   value="$(arg first_tb3_y_pos)"/>
@@ -19,6 +23,7 @@
     <param name="init_pose_yaw" value="$(arg first_tb3_yaw)"  />
   </group>
 
+  <!-- Pass the second turtlebot's position tb3_1/map_merge  -->
   <group ns="$(arg second_tb3)/map_merge">
     <param name="init_pose_x"   value="$(arg second_tb3_x_pos)"/>
     <param name="init_pose_y"   value="$(arg second_tb3_y_pos)"/>
@@ -26,6 +31,7 @@
     <param name="init_pose_yaw" value="$(arg second_tb3_yaw)"  />
   </group>
 
+  <!-- Run the multirobot_map_merging node -->
   <node pkg="multirobot_map_merge" type="map_merge" respawn="false" name="map_merge">
     <param name="robot_map_topic" value="map"/>
     <param name="robot_namespace" value="tb3"/>
@@ -36,6 +42,8 @@
     <param name="discovery_rate" value="0.05"/>
     <param name="estimation_rate" value="0.1"/>
     <param name="estimation_confidence" value="1.0"/>
+
+    <!-- remap the individual maps from the local map (published by SLAM) to the expanded map (published by the map_expansion node)-->
     <remap from = "$(arg first_tb3)/map" to = "new_tb3_0_map"/>
     <remap from = "$(arg second_tb3)/map" to = "new_tb3_1_map"/>
   </node>
@@ -44,8 +52,7 @@
   <node pkg="tf" type="static_transform_publisher" name="world_to_$(arg second_tb3)_tf_broadcaster" args="0 0 0 0 0 0 /map /$(arg second_tb3)/map 100"/>
   <node pkg="tf" type="static_transform_publisher" name="world_to_new_$(arg first_tb3)_map" args="0 0 0 0 0 0 /map /new_tb3_0_map 100"/>
   <node pkg="tf" type="static_transform_publisher" name="world_to__new_$(arg second_tb3)_map" args="0 0 0 0 0 0 /map /new_tb3_1_map 100"/>
-  <!-- <node pkg="tf" type="static_transform_publisher" name="map1_to_$(arg first_tb3)_tf_broadcaster"  args="0 0 0 0 0 0 /$(arg first_tb3)/map /$(arg first_tb3)/$(arg first_tb3)/map 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="wmap2_to_$(arg second_tb3)_tf_broadcaster" args="0 0 0 0 0 0 /$(arg second_tb3)/map /$(arg second_tb3)/$(arg second_tb3)/map 100"/> -->
 </launch>
 
+<!-- See original documentation -->
 <!-- http://wiki.ros.org/multirobot_map_merge -->

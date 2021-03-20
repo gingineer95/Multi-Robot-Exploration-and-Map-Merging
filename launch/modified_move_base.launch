@@ -1,14 +1,16 @@
-<launch>    
+<launch>  
+
+   <!-- Arguments and parameters -->
   <arg name="ns"  default="tb3_0"/>
-  <!-- <arg name="cmd_vel_topic" default="$(arg ns)/cmd_vel" />
-  <arg name="odom_topic" default="$(arg ns)/odom" /> -->
   <arg name = "robot_base_frame" default = "$(arg ns)/base_footprint"/>
   <arg name="move_forward_only" default="false"/>
 
-  <!-- Define your move_base node -->
+  <!-- Open the move_base node with custom configuration files -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     
-    <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" /> -->
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+
+    <!-- move the parameters so they're all here and not turtelbot3_nav -->
     <rosparam file="$(find turtlebot3_navigation)/param/costmap_common_params_burger.yaml" command="load" ns="global_costmap"/>
     <rosparam file="$(find turtlebot3_navigation)/param/costmap_common_params_burger.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find multi_robot_exploration)/config/local_costmap_params_$(arg ns).yaml"  command="load" />
@@ -17,8 +19,6 @@
     <rosparam file="$(find turtlebot3_navigation)/param/move_base_params.yaml" command="load" />
     <rosparam file="$(find turtlebot3_navigation)/param/dwa_local_planner_params_burger.yaml" command="load" />
 
-    <!-- <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
-    <remap from="odom" to="$(arg odom_topic)"/> -->
     <remap from="robot_base_frame" to="$(arg ns)/base_footprint"/>
     <remap from="/map" to="$(arg ns)/map"/>
 

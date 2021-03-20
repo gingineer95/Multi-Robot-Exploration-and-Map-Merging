@@ -1,7 +1,9 @@
 <launch>
 
+  <!-- Namespace -->
   <arg name="ns" default="tb3_0"/>
 
+  <!-- Run slam_toolbox's online_synch node and remap the parameters to match the robot's namespaces -->
   <node pkg="slam_toolbox" type="sync_slam_toolbox_node" name="slam_toolbox_$(arg ns)" output="screen">
     <rosparam command="load" file="$(find multi_turtlebot_slam)/config/mapper_params_online_sync.yaml" />
     <param name="base_frame" value="$(arg ns)/base_footprint"/>
@@ -10,7 +12,6 @@
     <remap from="/map" to="$(arg ns)/map"/>
     <remap from="/scan" to="$(arg ns)/scan"/>
     <remap from="/initialpose" to = "/initialpose_$(arg ns)"/>
-
   </node>
 
 </launch>

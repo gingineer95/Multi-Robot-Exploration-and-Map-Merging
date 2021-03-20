@@ -1,17 +1,19 @@
 <launch>
+
+    <!-- Arguments -->
     <arg name="robot_name"/> <!--name will change with multiple robots-->
     <arg name="init_pose"/> <!--init pos will change for each robot-->
 
+    <!-- Load the specific robot decription for tb3_0 -->
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find multi_turtlebot_slam)/urdf/tb3_0.urdf.xacro" />
 
+    <!-- Start the robot state publisher -->
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher_0" output="screen">
     <param name="publish_frequency" type="double" value="50.0" />
-    <!-- <param name="tf_prefix" value="$(arg robot_name)" /> -->
     </node>
     
+    <!-- Spawn the model in gazebo -->
     <node name="spawn_urdf_0" pkg="gazebo_ros" type="spawn_model"
     args="$(arg init_pose) -urdf -model $(arg robot_name) -param robot_description"/>
 
-    <!-- The odometry estimator, throttling, fake laser etc. go here -->
-    <!-- All the stuff as from usual robot launch file -->
 </launch>
