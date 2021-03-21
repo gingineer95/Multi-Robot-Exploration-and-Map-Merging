@@ -5,12 +5,10 @@
   <arg name = "robot_base_frame" default = "$(arg ns)/base_footprint"/>
   <arg name="move_forward_only" default="false"/>
 
-  <!-- Open the move_base node with custom configuration files -->
+  <!-- Open the move_base node with some custom configuration files -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     
     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
-
-    <!-- move the parameters so they're all here and not turtelbot3_nav -->
     <rosparam file="$(find turtlebot3_navigation)/param/costmap_common_params_burger.yaml" command="load" ns="global_costmap"/>
     <rosparam file="$(find turtlebot3_navigation)/param/costmap_common_params_burger.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find multi_robot_exploration)/config/local_costmap_params_$(arg ns).yaml"  command="load" />

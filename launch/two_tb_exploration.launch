@@ -1,11 +1,9 @@
 <launch>
   <!-- Arguments -->
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-  <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/>
-  <arg name="open_rviz" default="true"/>
+  <!-- <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/> -->
   <arg name="first_tb3"  default="tb3_0"/>
   <arg name="second_tb3" default="tb3_1"/>
-  <!-- <arg name="map_file" default="$(find multi_robot_exploration)/maps/map.yaml"/> -->
 
   <arg name="first_tb3_x_pos" default="-7.0"/>
   <arg name="first_tb3_y_pos" default=" -1.0"/>
@@ -13,10 +11,10 @@
   <arg name="second_tb3_x_pos" default=" 7.0"/>
   <arg name="second_tb3_y_pos" default=" -1.0"/>
 
-  <!-- Add the map expansion node -->
+  <!-- Run the map expansion node -->
   <node pkg="multi_robot_exploration" type="map_node" name="multi_robot_exploration_map_node"/>
 
-  <!-- Open two tb in gazebo -->
+  <!-- Open two tb in gazebo and give spawn positions -->
   <include file="$(find multi_robot_exploration)/launch/spawn_robots.launch">
     <arg name="first_tb3_x_pos" value="-7.0"/>
     <arg name="first_tb3_y_pos" value="-1.0"/>
@@ -25,7 +23,7 @@
     <arg name="second_tb3_y_pos" value="-1.0"/>
   </include>
 
-  <!-- Open slam for each ns -->
+  <!-- Open slam for each robot in their ns -->
   <include file = "$(find multi_robot_exploration)/launch/slam_online_synch.launch">
     <arg name="ns"  value="$(arg first_tb3)"/>
   </include>
@@ -34,14 +32,14 @@
     <arg name="ns"  value="$(arg second_tb3)"/>
   </include>
 
-  <!-- Merge the two maps -->
+  <!-- Merge the two robot maps -->
   <include file="$(find multi_robot_exploration)/launch/multi_robot_map_merge.launch"/>
 
   <!-- Open rviz for two robots -->
   <node pkg="rviz" type="rviz" name="rviz"
     args="-d $(find multi_robot_exploration)/config/two_tb.rviz"/>
 
-  <!-- Open move_base for each ns -->
+  <!-- Open move_base for each robot in their ns -->
   <group ns = "$(arg first_tb3)">
     <include file="$(find multi_robot_exploration)/launch/modified_move_base.launch">
     <arg name="ns"  value="$(arg first_tb3)"/>
@@ -54,11 +52,11 @@
     </include>
   </group>
 
-  <!-- Open Frontier Exploration nodes -->
+  <!-- Open Frontier Exploration for each robot -->
   <node pkg="multi_robot_exploration" type="tb3_0_FE" name="tb3_0_FE"/>
   <node pkg="multi_robot_exploration" type="tb3_1_FE" name="tb3_1_FE"/>
 
-  <!-- Use two seperate controls for navigation -->
+  <!-- Use two seperate controls for independent teleoperation -->
   <!-- <group ns = "$(arg first_tb3)">
     <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
   </group>
@@ -67,27 +65,24 @@
     <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name ="teleop_twist_keyboard"/>
   </group> -->
 
-  <!-- Add the following transform to resolve map and namespace mismatch -->
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_f"  args="0 0 0 0 0 0 /$(arg first_tb3)/base_footprint /$(arg first_tb3)/$(arg first_tb3)/base_footprint 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_link"  args="0 0 0 0 0 0 /$(arg first_tb3)/base_link /$(arg first_tb3)/$(arg first_tb3)/base_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_left_wheel"  args="0 0 0 0 0 0 /$(arg first_tb3)/wheel_left_link /$(arg first_tb3)/$(arg first_tb3)/wheel_left_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_right_wheel"  args="0 0 0 0 0 0 /$(arg first_tb3)/wheel_right_link /$(arg first_tb3)/$(arg first_tb3)/wheel_right_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_scan"  args="0 0 0 0 0 0 /$(arg first_tb3)/base_scan /$(arg first_tb3)/$(arg first_tb3)/base_scan 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_caster"  args="0 0 0 0 0 0 /$(arg first_tb3)/caster_back_link /$(arg first_tb3)/$(arg first_tb3)/caster_back_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_imu"  args="0 0 0 0 0 0 /$(arg first_tb3)/imu_link /$(arg first_tb3)/$(arg first_tb3)/imu_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_map"  args="0 0 0 0 0 0 /$(arg first_tb3)/map /$(arg first_tb3)/$(arg first_tb3)/map 100"/>
+  <!-- Add the following transforms to resolve map and namespace mismatch -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_footprint"  args="0 0 0 0 0 0 /$(arg first_tb3)/base_footprint /$(arg first_tb3)/$(arg first_tb3)/base_footprint "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_link"       args="0 0 0 0 0 0 /$(arg first_tb3)/base_link /$(arg first_tb3)/$(arg first_tb3)/base_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_left_wheel"      args="0 0 0 0 0 0 /$(arg first_tb3)/wheel_left_link /$(arg first_tb3)/$(arg first_tb3)/wheel_left_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_right_wheel"     args="0 0 0 0 0 0 /$(arg first_tb3)/wheel_right_link /$(arg first_tb3)/$(arg first_tb3)/wheel_right_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_scan"            args="0 0 0 0 0 0 /$(arg first_tb3)/base_scan /$(arg first_tb3)/$(arg first_tb3)/base_scan "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_caster"          args="0 0 0 0 0 0 /$(arg first_tb3)/caster_back_link /$(arg first_tb3)/$(arg first_tb3)/caster_back_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_imu"             args="0 0 0 0 0 0 /$(arg first_tb3)/imu_link /$(arg first_tb3)/$(arg first_tb3)/imu_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_map"             args="0 0 0 0 0 0 /$(arg first_tb3)/map /$(arg first_tb3)/$(arg first_tb3)/map "/>
 
 
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_base_f"  args="0 0 0 0 0 0 /$(arg second_tb3)/base_footprint /$(arg second_tb3)/$(arg second_tb3)/base_footprint 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_base_link"  args="0 0 0 0 0 0 /$(arg second_tb3)/base_link /$(arg second_tb3)/$(arg second_tb3)/base_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_left_wheel"  args="0 0 0 0 0 0 /$(arg second_tb3)/wheel_left_link /$(arg second_tb3)/$(arg second_tb3)/wheel_left_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_right_wheel"  args="0 0 0 0 0 0 /$(arg second_tb3)/wheel_right_link /$(arg second_tb3)/$(arg second_tb3)/wheel_right_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_scan"  args="0 0 0 0 0 0 /$(arg second_tb3)/base_scan /$(arg second_tb3)/$(arg second_tb3)/base_scan 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_caster"  args="0 0 0 0 0 0 /$(arg second_tb3)/caster_back_link /$(arg second_tb3)/$(arg second_tb3)/caster_back_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_imu"  args="0 0 0 0 0 0 /$(arg second_tb3)/imu_link /$(arg second_tb3)/$(arg second_tb3)/imu_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_map"  args="0 0 0 0 0 0 /$(arg second_tb3)/map /$(arg second_tb3)/$(arg second_tb3)/map 100"/>
-
-  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="edge_0_broadcaster_map"  args="0 0 0 0 0 0 /tb3_0/map /edges_map_0 "/>
-  <node pkg="tf2_ros" type="static_transform_publisher" name="region_0_broadcaster_map"  args="0 0 0 0 0 0 /tb3_0/map /region_map_0"/> -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_base_footprint"  args="0 0 0 0 0 0 /$(arg second_tb3)/base_footprint /$(arg second_tb3)/$(arg second_tb3)/base_footprint "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_base_link"       args="0 0 0 0 0 0 /$(arg second_tb3)/base_link /$(arg second_tb3)/$(arg second_tb3)/base_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_left_wheel"      args="0 0 0 0 0 0 /$(arg second_tb3)/wheel_left_link /$(arg second_tb3)/$(arg second_tb3)/wheel_left_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_right_wheel"     args="0 0 0 0 0 0 /$(arg second_tb3)/wheel_right_link /$(arg second_tb3)/$(arg second_tb3)/wheel_right_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_scan"            args="0 0 0 0 0 0 /$(arg second_tb3)/base_scan /$(arg second_tb3)/$(arg second_tb3)/base_scan "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_caster"          args="0 0 0 0 0 0 /$(arg second_tb3)/caster_back_link /$(arg second_tb3)/$(arg second_tb3)/caster_back_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_imu"             args="0 0 0 0 0 0 /$(arg second_tb3)/imu_link /$(arg second_tb3)/$(arg second_tb3)/imu_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_map"             args="0 0 0 0 0 0 /$(arg second_tb3)/map /$(arg second_tb3)/$(arg second_tb3)/map "/>
 
 </launch>

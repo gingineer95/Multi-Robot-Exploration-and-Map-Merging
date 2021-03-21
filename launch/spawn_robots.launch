@@ -1,17 +1,18 @@
 <launch>
 
   <!-- Initial position for the first turtlebot -->
-  <arg name="first_tb3_x_pos" default="-7.0"/> <!-- Between -7.0 and 7.0 -->
-  <arg name="first_tb3_y_pos" default=" -1.0"/> <!-- Between -7.0 and 7.0 -->
+  <arg name="first_tb3_x_pos" default="-7.0"/> <!-- Between -7.0 and 7.0 ???-->
+  <arg name="first_tb3_y_pos" default=" -1.0"/> <!-- Between -7.0 and 7.0 ???-->
 
   <!-- Initial position for the second turtlebot -->
-  <arg name="second_tb3_x_pos" default=" 7.0"/> <!-- Between -7.0 and 7.0 -->
-  <arg name="second_tb3_y_pos" default=" -1.0"/> <!-- Between -7.0 and 7.0 -->
+  <arg name="second_tb3_x_pos" default=" 7.0"/> <!-- Between -7.0 and 7.0 ???-->
+  <arg name="second_tb3_y_pos" default=" -1.0"/> <!-- Between -7.0 and 7.0 ???-->
 
   <!-- Combine the inital positions into one argument for spawning -->
   <arg name="init_pose_0" default="-x $(arg first_tb3_x_pos) -y $(arg first_tb3_y_pos) -z 0.0" />
   <arg name="init_pose_1" default="-x $(arg second_tb3_x_pos) -y $(arg second_tb3_y_pos) -z 0.0" />
 
+  <!-- Open the AWS bookstore gazebo world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find multi_robot_exploration)/worlds/bookstore.world"/>
     <arg name="paused" value="false"/>
