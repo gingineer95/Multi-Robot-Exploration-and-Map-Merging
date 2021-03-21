@@ -1,6 +1,8 @@
 Kailey Smith
 # Multi-Robot Exploration and Map Merging
 
+![real_FE_noisy](https://user-images.githubusercontent.com/70979347/111921896-0b3fe980-8a65-11eb-9349-c4512cfde041.gif)
+
 ## Project Description
 The goal is to use multiple robots to autonomously explore an environment and create one global merged map comprised of each's robot individual map. This can be achived with or without knwoledge of the robot's initial positions. 
 
@@ -23,6 +25,10 @@ To see this package in action, please view my portfolio and post and video deomo
 ## Installation Instructions
 - This package is called multi_robot_exploration
 - I dont have a rosinstall at the moment (my apologies, coming very soon) but for now please use the packages above for referance
+
+## Demonstration
+Below is a video of the simualed project at 20x speed
+<iframe width="560" height="315" src="https://www.youtube.com/embed/6pEU1-0Ax6o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Getting Started
 ### Multi-Robot Exploration and Map Merging
