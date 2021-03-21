@@ -26,12 +26,12 @@ To see this package in action, please view my portfolio and post and video deomo
 - This package is called multi_robot_exploration
 - I dont have a rosinstall at the moment (my apologies, coming very soon) but for now please use the packages above for referance
 
-## Demonstration
-Below is a video of the simualed project at 20x speed
-<iframe width="560" height="315" src="https://www.youtube.com/embed/6pEU1-0Ax6o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 ## Getting Started
 ### Multi-Robot Exploration and Map Merging
+
+![2tb_FE](https://user-images.githubusercontent.com/70979347/111922117-22cba200-8a66-11eb-8fbc-e9a0257c7e63.gif)
+
+
 #### Known Initial Robot Positions
 - This package is initially set up to run in simulation given that you know where the robot's spawn position. 
 - To run multi-robot exploration and map merging in a simulated bookstore, `source` your workspace and run `roslaunch multi_robot_exploration two_tb_exploration.launch`
@@ -47,6 +47,10 @@ and `rosservice call /tb3_1_start`
 - Now sit back and watch the robots explore the bookstore!
 
 #### Unknown Initial Robot Positions
+
+![rviz_unknown_pos](https://user-images.githubusercontent.com/70979347/111922165-57d7f480-8a66-11eb-8364-e0724359a6b5.png)
+
+
 - For unknown initial positions, the robots must spawn relatively close to eachother. This is because the multirobot_map_merging node needs a sufficinet amount of maps to overlap in order to use a feature detection algorithm to stitch the individial maps together. 
     - See the [multirobot_map_merge](http://wiki.ros.org/multirobot_map_merge) for more documentation.
 - To run `source` your workspace and run `roslaunch multi_robot_exploration two_tb_exploration.launch known_initial_pos:=false first_tb3_x_pos:=-1.0 first_tb3_y_pos:=-6.0 second_tb3_x_pos:=-1.5 second_tb3_y_pos:=-6.0`
