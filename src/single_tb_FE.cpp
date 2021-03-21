@@ -1,6 +1,11 @@
 /// \file
 /// \brief With this node a turtlebot will explore a given space using Froniter Exploration
 
+/// PUBLISHES:
+///     /edges_map (nav_msgs/OccupancyGrid): Publishes the same map as SLAM, with visualization of the frontier edges
+/// SUBSCRIBES:
+///     /map (nav_msgs/OccupancyGrid): Reads the map created by SLAM to determine frontiers
+
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <nav_msgs/OccupancyGrid.h>

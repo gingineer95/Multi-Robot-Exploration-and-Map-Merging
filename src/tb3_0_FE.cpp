@@ -1,6 +1,13 @@
 /// \file
 /// \brief This node causes the robot to move autonomously via Frontier Exploration
 
+/// PUBLISHES:
+///     /edges_map_0 (nav_msgs/OccupancyGrid): Publishes the same map as SLAM, with visualization of the frontier edges
+/// SUBSCRIBES:
+///     /map (nav_msgs/OccupancyGrid): Reads the map created by SLAM to determine frontiers
+/// SERVICES:
+///     /tb3_0_start (bool): Starts the robot's frontier exploraiton algorithm
+
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <nav_msgs/OccupancyGrid.h>
@@ -25,8 +32,6 @@ class FrontExpl
         {
             FE0_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("edges_map_0", 1);
             map_0_sub = nh.subscribe("map", 10, &FrontExpl::mapCallback, this);
-            // tf2_ros::TransformListener tfListener(tfBuffer);
-            // MoveBaseClient ac("tb3_0/move_base", true);
             start0_srv = nh.advertiseService("tb3_0_start", &FrontExpl::startCallback, this);
             std::cout << "Initialized tb3_0 publishers, subcribers and service" << std::endl;
         }

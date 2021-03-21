@@ -1,6 +1,13 @@
 /// \file
 /// \brief This node causes the robot to move autonomously via Frontier Exploration
 
+/// PUBLISHES:
+///     /edges_map_1 (nav_msgs/OccupancyGrid): Publishes the same map as SLAM, with visualization of the frontier edges
+/// SUBSCRIBES:
+///     /map (nav_msgs/OccupancyGrid): Reads the map created by SLAM to determine frontiers
+/// SERVICES:
+///     /tb3_1_start (bool): Starts the robot's frontier exploraiton algorithm
+
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 #include <nav_msgs/OccupancyGrid.h>
