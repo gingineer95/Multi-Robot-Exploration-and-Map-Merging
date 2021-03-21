@@ -3,7 +3,7 @@
     <!-- Arguments and parameters -->
     <arg name = "model" default = "burger"/>
     <arg name="move_forward_only" default="false"/>
-    <param name="/use_sim_time" value="true"/>
+    <!-- <param name="/use_sim_time" value="true"/> -->
 
     <!-- Open the "house" in gazebo -->
     <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" pass_all_args = "true">
