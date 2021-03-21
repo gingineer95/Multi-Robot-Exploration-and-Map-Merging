@@ -147,8 +147,8 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(map_node src/map_expansion.cpp)
 add_executable(single_tb_FE src/single_tb_FE.cpp)
-add_executable(tb3_0_FE src/exploradora0.cpp)
-add_executable(tb3_1_FE src/exploradora1.cpp)
+add_executable(tb3_0_FE src/tb3_0_FE.cpp)
+add_executable(tb3_1_FE src/tb3_1_FE.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
