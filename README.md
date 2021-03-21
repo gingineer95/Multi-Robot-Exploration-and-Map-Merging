@@ -10,7 +10,7 @@ Currently this repository contains the software necessary to run frontier explor
 
 Note: The original multirobot_map_merge node was written to run gmapping, but for this package the gmapping functionality has been removed in favor of using `slam_toolbox`. To achieve map merging however, each robot's occupancy grid must be the same size and have the same origin. To compensate for this, the `map_expansion` node was written which creates a new, larger map and inserts `slam_toolbox`'s data into the new map. 
 
-To see this package in action, please view my portfolio and post and video deomonstration here: https://gingineer95.github.io/
+To see this package in action, please view my portfolio and post and video deomonstration here: https://gingineer95.github.io/2021/03/21/multirobot-map-merge/
 
 ## 3rd Party Packages
 - [Multirobot_map_merge](http://wiki.ros.org/multirobot_map_merge): Node that merges the individual maps into one gloval map
@@ -21,8 +21,8 @@ To see this package in action, please view my portfolio and post and video deomo
 - [Gazebo_ros](http://wiki.ros.org/gazebo_ros) 
 
 ## Installation Instructions
--This package is called multi_robot_exploration
-**insert rosinstall instructions here**
+- This package is called multi_robot_exploration
+- I dont have a rosinstall at the moment (my apologies, coming very soon) but for now please use the packages above for referance
 
 ## Getting Started
 ### Multi-Robot Exploration and Map Merging
@@ -40,8 +40,6 @@ and `rosservice call /tb3_1_start`
     - Also when the robots start moving (of course)
 - Now sit back and watch the robots explore the bookstore!
 
-**insert GIF here**
-
 #### Unknown Initial Robot Positions
 - For unknown initial positions, the robots must spawn relatively close to eachother. This is because the multirobot_map_merging node needs a sufficinet amount of maps to overlap in order to use a feature detection algorithm to stitch the individial maps together. 
     - See the [multirobot_map_merge](http://wiki.ros.org/multirobot_map_merge) for more documentation.
@@ -52,8 +50,6 @@ and `rosservice call /tb3_1_start`
 - To start frontier exploration for both robots run `rosservice call /tb3_0_start` 
 and `rosservice call /tb3_1_start`
 
-**insert images here**
-
 ### Frontier Exploration on an actual Turtlebot3
 - Please see the [Turtlebot3](https://emanual.robotis.com/docs/en/platform/turtlebot3/quick-start/) on how to set up your Turtlebot if you haven't already
     - Note: This package was written to work with the `burger` Turtlebot model. If you would like to use another model, you will have to add / edit your own urdfs and any referance to the `burger` Turtlebot in the current launch / config files. 
@@ -61,8 +57,6 @@ and `rosservice call /tb3_1_start`
 - SSH into your Turtlebot and run `roslaunch turtlebot3_bringup turtlebot3_robot.launch`
 - To start frontier exploration run `roslaunch single_tb_FE.launch` on a terminal on your PC. 
 - Enjoy the soothing sights and sounds of your Turtlebot exploring real live frontiers
-
-**insert GIF here**
 
 **Note: For best results, use your Turtlebot on smooth surfaces as opposed to carpet**
 
