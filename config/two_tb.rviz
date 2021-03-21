@@ -235,22 +235,22 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Map
       Topic: /tb3_0/map
       Unreliable: false
       Use Timestamp: false
-      Value: true
+      Value: false
     - Alpha: 0.30000001192092896
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Map
       Topic: /tb3_1/map
       Unreliable: false
       Use Timestamp: false
-      Value: true
+      Value: false
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: map
@@ -484,7 +484,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -1.5899995565414429
+      Angle: -1.5749995708465576
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -494,10 +494,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 29.579071044921875
+      Scale: 52.795196533203125
       Target Frame: map
-      X: -4.962365627288818
-      Y: -2.3600821495056152
+      X: 0.1654088944196701
+      Y: -0.9386844635009766
     Saved: ~
 Window Geometry:
   Displays:

@@ -31,16 +31,23 @@ Note: The original multirobot_map_merge node was written to run gmapping, but fo
     - You'll know everything is up and running when the merged map appears (published on the `map` topic)
     - `tb3_0/map` and `tb3_1/map` are the individual robot maps which are published from `slam_toolbox`
 - The robots require a start service be called before they start executing frontier exploration
-- To start frontier exploration for both robots run `rosservice call /tb3_0_start` and `rosservice call /tb3_1_start`
+- To start frontier exploration for both robots run `rosservice call /tb3_0_start` 
+and `rosservice call /tb3_1_start`
     - You'll know this has been executed sucessfully when red and purple goal arrows appear in Rviz, as well as the robot's planned path
     - Also when the robots start moving (of course)
 - Now sit back and watch the robots explore the bookstore!
 
-
-
 #### Unknown Initial Robot Positions
-
+- For unknown initial positions, the robots must spawn relatively close to eachother. This is because the multirobot_map_merging node needs a sufficinet amount of maps to overlap in order to use a feature detection algorithm to stitch the individial maps together. 
+    - See the [multirobot_map_merge](http://wiki.ros.org/multirobot_map_merge) for more documentation.
+- To run `source` your workspace and run `roslaunch multi_robot_exploration two_tb_exploration.launch known_initial_pos:=false first_tb3_x_pos:=-1.0 first_tb3_y_pos:=-6.0 second_tb3_x_pos:=-1.5 second_tb3_y_pos:=-6.0`
+    - You can edit the initial position values directly in the launch file instead of you would like
+- As with the known initial positions, you should see two Turtlebots spawn in Gazebo and Rviz
+- Again, the robots require a start service be called before they start executing frontier exploration
+- To start frontier exploration for both robots run `rosservice call /tb3_0_start` 
+and `rosservice call /tb3_1_start`
 
 ### Frontier Exploration on an actual Turtlebot3
+
 
 ## Future Work

@@ -1,9 +1,9 @@
 <launch>
   <!-- Arguments -->
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-  <!-- <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/> -->
   <arg name="first_tb3"  default="tb3_0"/>
   <arg name="second_tb3" default="tb3_1"/>
+  <arg name="known_initial_pos" default="true"/>
 
   <arg name="first_tb3_x_pos" default="-7.0"/>
   <arg name="first_tb3_y_pos" default=" -1.0"/>
@@ -16,11 +16,11 @@
 
   <!-- Open two tb in gazebo and give spawn positions -->
   <include file="$(find multi_robot_exploration)/launch/spawn_robots.launch">
-    <arg name="first_tb3_x_pos" value="-7.0"/>
-    <arg name="first_tb3_y_pos" value="-1.0"/>
+    <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
+    <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
 
-    <arg name="second_tb3_x_pos" value="7.0"/>
-    <arg name="second_tb3_y_pos" value="-1.0"/>
+    <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
+    <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
   </include>
 
   <!-- Open slam for each robot in their ns -->
@@ -33,7 +33,9 @@
   </include>
 
   <!-- Merge the two robot maps -->
-  <include file="$(find multi_robot_exploration)/launch/multi_robot_map_merge.launch"/>
+  <include file="$(find multi_robot_exploration)/launch/multi_robot_map_merge.launch">
+    <arg name="known_initial_pos" value="$(arg known_initial_pos)"/>
+  </include>
 
   <!-- Open rviz for two robots -->
   <node pkg="rviz" type="rviz" name="rviz"
