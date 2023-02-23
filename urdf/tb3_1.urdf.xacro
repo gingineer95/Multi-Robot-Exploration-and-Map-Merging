@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="turtlebot3_burger_1" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find turtlebot3_description)/urdf/common_properties.xacro"/>
-  <xacro:include filename="$(find multi_turtlebot_slam)/urdf/tb3_1.gazebo.xacro"/>
+  <xacro:include filename="$(find multi_robot_exploration)/urdf/tb3_1.gazebo.xacro"/>
 
   <link name="tb3_1/base_footprint"/>
 
